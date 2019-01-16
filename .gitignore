@@ -1,0 +1,12 @@
+*.pyc
+__pycache__
+test.py
+
+.stash
+data
+
+*.log
+*.fls
+*.aux
+*.fdb_latexmk
+*.synctex.gz
