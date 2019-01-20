@@ -1,50 +1,44 @@
 from interact import *
-from util import *
+from .. import *
 import argparse
 
 parser = argparse.ArgumentParser(description='interactive cycles, cocycles, and circular coordinates.')
-parser.add_argument('dset', default='mnist', nargs='?', help='data set. default: mnist.')
-parser.add_argument('-c','--c', default=0, type=int, help='image class. default: 0.')
-parser.add_argument('-i','--i', default=0, type=int, help='image index. default: 0.')
-parser.add_argument('-f','--fun', default='homology', help='persistence function. default: homology.')
-parser.add_argument('-p','--prime', default=2, type=int, help='field coefficient. default: 2 (11 if fun = circular).')
+parser.add_argument('-f','--fun', default='circular', help='persistence function. default: homology.')
+# parser.add_argument('dset', default='mnist', nargs='?', help='data set. default: mnist.')
+# parser.add_argument('-c','--c', default=0, type=int, help='image class. default: 0.')
+# parser.add_argument('-i','--i', default=0, type=int, help='image index. default: 0.')
+# parser.add_argument('-p','--prime', default=11, type=int, help='field coefficient. default: 2 (11 if fun = circular).')
 
-def interact(args):
-    shape = SHAPE[args.dset]
-    X, y = load_data(args.dset)
-    G = group_data(X, y)
-    i, last = 0, None
-    i, last = 0, None
-    while i < len(G[args.c]):
-        cid, obj = addevent(anevent, G[args.c][i], args.fun, args.prime, args.dset)
-        if last != None:
-            obj.last = last
-            key = obj.query(last)
-            if key:
-                obj.plot_image(key)
-                plt.show()
-        input = raw_input(' > ')
-        if input in ['exit', 'quit', 'e', 'q']:
-            break
-        elif ' ' in input:
-            cmds = input.split(',') if ',' in input else [input]
-            for cmd in cmds:
-                k, v = [c for c in cmd.split(' ') if len(c) > 0]
-                if 'class' in k:
-                    args.c, i = int(v), 0
-                elif 'data' in k:
-                    args.dset = v
-                    shape = SHAPE[args.dset]
-                    X, y = load_data(args.dset)
-                    G, i = group_data(X, y), 0
-                elif 'fun' in k or 'function' in k:
-                    args.fun = v
-                elif 'prime' in k:
-                    args.prime = int(v)
-                else:
-                    print('\tunknown command %s' % cmd)
+CMDS = {'fun' : lambda v: v in ['homology', 'cohomology', 'circular']} #, 'prime' : lambda v: v.isdigit()}
+FDICT = {'fun' : lambda v: v} #, 'prime' : lambda v: int(v)}
+
+def process_cmd(args, input):
+    cmds = input.split(',') if ',' in input else [input]
+    for cmd in cmds:
+        k, v = cmd.split(' ')
+        if k in CMDS and CMDS[k](v):
+            args.__setattr__(k, FDICT[k](v))
+        elif k in FDICT:
+            print('! invalid argument %s for command %s' % (v, k))
         else:
-            i += 1
-        fig.canvas.mpl_disconnect(cid)
-        map(lambda a: a.cla(), ax)
-        last = obj.last
+            print('! unknown command %s' % k)
+    return args
+
+def interact(args, data, dim, t):
+    R = RipsInteract(data, dim, t)
+    last = None
+    while True:
+        cid = R.addevent(args.fun, args.prime)
+        if last != None:
+            R.OBJ.last = last
+            key = R.OBJ.query(last)
+            if key: R.OBJ.plot(key)
+        input = raw_input(' > ')
+        if input in ['exit', 'quit', 'e', 'q']: break
+        elif ' ' in input:
+            args = process_cmd(args, input)
+        else: continue
+        R.OBJ.fig.canvas.mpl_disconnect(cid)
+        map(lambda a: a.cla(), R.OBJ.ax)
+        last = R.OBJ.last
+    return R

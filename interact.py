@@ -3,4 +3,5 @@ from tda.interact import *
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    interact(args)
+    data, dim, t = double_circle(100), 2, np.sqrt(2) * 2
+    R = interact(args, data, dim, t)

@@ -1,10 +1,13 @@
 from torchvision import datasets, transforms
+from numpy.fft import fft2, ifft2
 from multiprocessing import Pool
+from numpy.random import normal
 from functools import partial
 import numpy.linalg as la
 from tqdm import tqdm
+import torch, sys, os
+import pickle as pkl
 import numpy as np
-import torch
 
 '''''''''''''''
 '''' DATA '''''
@@ -46,9 +49,17 @@ def torus(n=1000, R=0.7, r=0.25):
     z = r * np.sin(t[1])
     return np.vstack([x, y, z]).T
 
+def grf(alpha, m=1024):
+    n = int(np.sqrt(m))
+    fin = range(0, n / 2 + 1) + range(n / -2 + 1, 0)
+    x = np.stack(np.meshgrid(fin, fin), axis=2).reshape(-1, 2)
+    f = lambda r: np.sqrt(np.sqrt(r[0] ** 2 + r[1] ** 2) ** alpha) if r.sum() else 0.
+    a = abs(ifft2(normal(size=(n, n)) * np.array(map(f, x)).reshape(n, n)))
+    return (a - a.min()) / (a.max() - a.min())
+
 
 '''''''''''''''
-'' CORE UTIL ''
+'' MATH UTIL ''
 '''''''''''''''
 
 def distance_matrix(X, axis=2, **kwargs):
@@ -56,6 +67,20 @@ def distance_matrix(X, axis=2, **kwargs):
 
 def normalize(x):
     return (x - x.min()) / ((x.max() - x.min()) if x.max() > 0 else 1.)
+
+
+''''''''''''''
+''' I/O UTIL ''
+'''''''''''''''
+
+def delete_line():
+    sys.stdout.write('\x1b[1A')
+    sys.stdout.write('\x1b[2K')
+
+def wait(s=''):
+    ret = raw_input(s)
+    delete_line()
+    return ret
 
 def save_pkl(fname, x):
     with open(fname, 'w') as f:
@@ -67,16 +92,37 @@ def load_pkl(fname):
         x = pkl.load(f)
     return x
 
-def wait(s=''):
-    ret = raw_input(s)
-    sys.stdout.write('\x1b[1A')
-    sys.stdout.write('\x1b[2K')
-    return ret
+def save_state(fname, data, **kwargs):
+    dout = {'data' : data, 'args' : kwargs}
+    print('[ saving %s' % fname)
+    save_pkl(fname, dout)
+    return dout
+
+def query_save(data, fpath='.', **kwargs):
+    ret = raw_input('[ save as: %s/' % fpath)
+    if not ret: return None, None
+    flist = os.path.split(ret)
+    for dir in flist[:-1]:
+        fpath = os.path.join(fpath, dir)
+        if not os.path.isdir(fpath):
+            print(' | creating directory %s' % fpath)
+            os.mkdir(fpath)
+    fname = os.path.join(fpath, flist[-1])
+    return fname, save_state(fname, data, **kwargs)
+
+def load_args(*keys):
+    if len(sys.argv) > 1:
+        try:
+            x = load_pkl(sys.argv[1])
+            return [x[k] for k in keys]
+        except e:
+            print(e)
+    return []
 
 
-''''''''''''''''''
-''' OTHER UTIL '''
-''''''''''''''''''
+'''''''''''''''''
+'' THREAD UTIL ''
+'''''''''''''''''
 
 def pmap(fun, x, *args):
     pool = Pool()

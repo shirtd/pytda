@@ -8,20 +8,19 @@ import numpy.linalg as la
 from ..persist import *
 import dionysus as dio
 from pydec import *
-from plot import *
 import numpy as np
 
 class RipsDEC(DioCohomology, dec.simplicial_complex):
-    # def __init__(self, data, prime, F):
-    #     DioCohomology.__init__(self, lambda x, y: y, data, prime, F)
     def __init__(self, H, pt):
         self.H, self.pt, self.dim = H, pt, H.dim
         F, self.bdy, self.z_bdy = H.get_lift(self.pt)
+        print('[ %d simplex %dD restriction (from %d)' % (len(F), self.dim, len(H)))
         DioCohomology.__init__(self, lambda x, y: y, H.data, H.prime, F)
         self.V = self.get_vertices(self.dim)
         dec.simplicial_complex.__init__(self, (self.data, self.V))
     def __getitem__(self, i): return super(dec.simplicial_complex, self).__getitem__(i)
     def __iter__(self): return super(dec.simplicial_complex, self).__iter__()
+    def append(self, l): return super(dec.simplicial_complex, self).append(l)
     def get_simplices(self, dim, t=np.Inf, eq=True):
         op = lambda x, y: x <= y if eq else x < y
         return [s for s in self.F if s.dimension() == dim and op(s.data, t)]
@@ -67,7 +66,7 @@ class RipsDEC(DioCohomology, dec.simplicial_complex):
         return alpha, beta, h
     def plot_edges(self, axis, h):
         K = self.complex()
-        plot_edges(axis, (self.data[K[1]], h.v), 0.02, alpha=0.5, zorder=0)
+        plot_edges(axis, self.data[K[1]], h.v, 0.02, alpha=0.5, zorder=0)
     def plot_vertices(self, axis, alpha):
         v = self.complex()[0].flatten()
         axis.scatter(self.data[v,0], self.data[v,1], c=alpha.v, cmap='rainbow', zorder=1)
