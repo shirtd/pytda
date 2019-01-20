@@ -1,9 +1,12 @@
 *.pyc
 __pycache__
 test.py
+batch.py
 
+*.pkl
 .stash
 data
+batch
 
 *.log
 *.fls
