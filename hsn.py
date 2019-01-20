@@ -2,9 +2,7 @@ from tda.plot import *
 from tda.hsn import *
 from tda import *
 
-N, PLOT = 1024, True
-# N, PLOT = 3025, True
-# N, PLOT = 5625, True
+N, PLOT = 3025, True
 DIM, THRESH = 2, np.sqrt(2)
 DELTA, EXP, BOUND = 0.03, -11., 0.5
 ALPHA, BETA = THRESH, 3 * THRESH
@@ -23,4 +21,4 @@ if __name__ == '__main__':
         net.plot(ax)
         plt.show(False)
 
-    fname, dout = query_save(net.net_dict())
+    fname, dout = query_save(net.net_dict(), coverage=res)

@@ -1,34 +1,16 @@
-from torchvision import datasets, transforms
 from numpy.fft import fft2, ifft2
 from multiprocessing import Pool
 from numpy.random import normal
 from functools import partial
 import numpy.linalg as la
-from tqdm import tqdm
-import torch, sys, os
+# from tqdm import tqdm
 import pickle as pkl
 import numpy as np
+import sys, os
 
 '''''''''''''''
 '''' DATA '''''
 '''''''''''''''
-
-SHAPE = {'mnist' : (28, 28),
-        'cifar' : (32, 32, 3)}
-
-DATA = {'mnist' : datasets.MNIST,
-        'cifar' : datasets.CIFAR10}
-
-def load_data(dset='mnist', train=True):
-    data = DATA[dset]('../data', train=train, transform=transforms.ToTensor())
-    X = torch.as_tensor(data.train_data if train else data.test_data, dtype=torch.float)
-    y = data.train_labels if train else data.test_labels
-    return X / X.max(), y
-
-def group_data(X, y, n=-1, k=1):
-    CLASS = np.unique(y)
-    D = {c : X[filter(lambda i: y[i] == c, range(len(y)))][:n] for c in CLASS}
-    return {c : np.array_split(D[c], k) for c in CLASS} if k != 1 else D
 
 def circle(n=20, r=1., uniform=False, noise=0.1):
     t = np.linspace(0, 1, n, False) if uniform else np.random.rand(n)
@@ -56,6 +38,26 @@ def grf(alpha, m=1024):
     f = lambda r: np.sqrt(np.sqrt(r[0] ** 2 + r[1] ** 2) ** alpha) if r.sum() else 0.
     a = abs(ifft2(normal(size=(n, n)) * np.array(map(f, x)).reshape(n, n)))
     return (a - a.min()) / (a.max() - a.min())
+
+# from torchvision import datasets, transforms
+# import torch
+#
+# SHAPE = {'mnist' : (28, 28),
+#         'cifar' : (32, 32, 3)}
+#
+# DATA = {'mnist' : datasets.MNIST,
+#         'cifar' : datasets.CIFAR10}
+#
+# def load_data(dset='mnist', train=True):
+#     data = DATA[dset]('../data', train=train, transform=transforms.ToTensor())
+#     X = torch.as_tensor(data.train_data if train else data.test_data, dtype=torch.float)
+#     y = data.train_labels if train else data.test_labels
+#     return X / X.max(), y
+#
+# def group_data(X, y, n=-1, k=1):
+#     CLASS = np.unique(y)
+#     D = {c : X[filter(lambda i: y[i] == c, range(len(y)))][:n] for c in CLASS}
+#     return {c : np.array_split(D[c], k) for c in CLASS} if k != 1 else D
 
 
 '''''''''''''''
@@ -128,7 +130,8 @@ def pmap(fun, x, *args):
     pool = Pool()
     f = partial(fun, *args)
     try:
-        y = pool.map(f, tqdm(x))
+        # y = pool.map(f, tqdm(x))
+        y = pool.map(f, x)
     except KeyboardInterrupt as e:
         print(e)
         pool.close()
@@ -143,7 +146,8 @@ def cmap(funct, x, *args):
     f = partial(map, fun)
     pool = Pool()
     try:
-        y = pool.map(f, tqdm(x))
+        # y = pool.map(f, tqdm(x))
+        y = pool.map(f, x)
     except KeyboardInterrupt as e:
         print(e)
         pool.close()
