@@ -28,7 +28,7 @@ def interact(args, data, dim, t):
     R = RipsInteract(data, dim, t)
     last = None
     while True:
-        cid = R.addevent(args.fun, args.prime)
+        cid = R.addevent(args.fun) #, args.prime)
         if last != None:
             R.OBJ.last = last
             key = R.OBJ.query(last)
