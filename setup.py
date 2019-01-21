@@ -44,7 +44,6 @@ def setup_package():
                 "shapely"
             ],
             configuration=configuration)
-        )
     finally:
         del sys.path[0]
         os.chdir(old_path)
