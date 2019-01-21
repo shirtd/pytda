@@ -30,19 +30,8 @@ def setup_package():
             long_description="An exploration of homological sensor networks, "\
                             "circular coordinates, and discrete exterior calculus "\
                             "in python using Dionysus and pydec.",
-            long_description_content_type="text/markdown",
             url="https://github.com/shirtd/pytda",
             # packages=setuptools.find_packages(),
-            install_requires=[
-                "argparse",
-                "cython",
-                "numpy",
-                "scipy",
-                "matplotlib",
-                "dionysus", # requires cmake, boost
-                "scikit-image",
-                "shapely"
-            ],
             configuration=configuration)
     finally:
         del sys.path[0]
