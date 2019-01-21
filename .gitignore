@@ -3,6 +3,7 @@ __pycache__
 test.py
 batch.py
 .pydec
+build
 
 *.pkl
 .stash

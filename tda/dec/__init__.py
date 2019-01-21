@@ -2,12 +2,12 @@ from numpy import asarray, eye, outer, inner, dot, vstack
 from numpy.random import seed, rand
 from itertools import combinations
 from scipy.sparse.linalg import cg
-from ..pydec import d, delta, star
+from pydec import d, delta, star
 from numpy.linalg import norm
 import numpy.linalg as la
 from ..persist import *
 import dionysus as dio
-from ..pydec import *
+from pydec import *
 import numpy as np
 
 class RipsDEC(DioCohomology, dec.simplicial_complex):

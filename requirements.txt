@@ -1,0 +1,8 @@
+argparse
+cython
+numpy
+scipy
+matplotlib
+dionysus
+scikit-image
+shapely
