@@ -2,12 +2,18 @@
 __pycache__
 test.py
 batch.py
+.pydec
 
 *.pkl
 .stash
 data
 batch
+tex/background.tex
+tex/.build
 
+*.bbl
+*.blg
+*.pdf
 *.log
 *.fls
 *.aux

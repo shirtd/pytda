@@ -1,0 +1,51 @@
+% !TeX root = ../main.tex
+\section{Sensor Networks and Simplicial Complexes} % (fold)
+\label{sec:complexes}
+
+Sensor networks generally consist of a collection of nodes in some domain with some capacity for communication between them.
+This capability for communication provides local information which can be integrated to reveal global information about the underlying domain.
+Such techniques often rely on knowing the locations of the nodes, which is rarely the case in practice.
+On the other hand, if some minimal assumptions are made about the domain itself we can verify the quality of the network without location information.
+
+We model sensor networks as collections of points sampled from a domain satisfying some minimal assumptions.
+The communication between sensors is represented by a metric on the domain which defines some radius of communication for each node.
+That is, let $\D$ be our domain imbued with some metric $\dist : \D\times\D\to\R$.
+Let $P\subset\D$ be a set of points sampled from $\D$, each representing a node in our sensor network.
+If we assume that each sensor is capable of communicating with nodes within some distance $\alpha > 0$ we may represent the network itself as an undirected graph $G = (P, E)$ with edges for each pair of nodes within distance $\alpha$:
+\[ E = \{(p, q)\in P\mid \dist(p, q)\leq \alpha\}. \]
+
+While this representation does provide some information about the overall connectivity of the network it does not necessarily give us any sense of how well the domain itself is covered.
+That is, if our goal is to determine if every point in a subset $D\subseteq\D$ of the underlying domain is within $\alpha$ of at least one sensor we must verify that $D$ is a subset of the union of the regions spanned by each node's communication radius.
+Formally, let $\ball_\e(p) := \{x\in\D\mid \dist(x, p)\leq\e\}$ denote the coverage region of a node $p\in P$ at radius $\e\in\R$ and \[P^\e := \displaystyle\bigcup_{p\in P}\ball_\e(p)\] denote the region covered by all nodes in $P$, or the $\e$-offset of $P$.
+We say that a subset $D$ of $\D$ is covered by $P$ at radius $\e$ if $D\subseteq P^\e$.
+
+We now define a generalization of a graph which can be used to represent the coverage region of a given sensor network.
+A \textbf{simplicial complex} $K$ is a collection of subsets, called \textbf{simplices}, of a vertex set $V$ that is closed under taking subsets.
+That is, for all $\sigma\in K$ and $\tau\subset\sigma$ it must follow that $\tau\in K$.
+The \textbf{dimension} of a simplex $\sigma\in K$ is defined as $\dim(\sigma) := |\sigma|-1$ where $|\cdot|$ denotes set cardinality.
+The dimension of a simplicial complex $K$ is the maximum dimension of any simplex in $K$.
+We note that an undirected graph $G = (V, E)$ is a 1-dimensional simplicial complex, consisting only of 0-simplices (vertices) $V$ and 1-simplices (edges) $E$.
+
+There is one simplicial complex in particular that encodes exactly the coverage region of a sensor network.
+The \textbf{\v Cech complex} of a finite collection of points $P\subset \D$ at scale $\e > 0$ is defined as
+\[ \cech^\e(P) := \left\{\sigma \subseteq P\mid \bigcap_{p\in \sigma}\ball_\e(p)\neq \emptyset \right\}. \]
+
+\textbf{TODO} $\cech^\e(P) \cong P^\e$.
+
+While the \v Cech complex captures exactly the coverage region in question it can only be computed with precise coordinate information.
+In the case when only pairwise proximity information is known we may use the \textbf{(Vietoris-)Rips complex} which is defined for a set $P$ at scale $\e > 0$ as
+\[ \rips^\e(P) := \left\{\sigma \subseteq P\mid \forall p,q\in\sigma,\ \dist(p, q)\leq\e\right\}. \]
+
+An important result about the relationship of \v Cech and Rips complexes follows from Jung's Theorem~\cite{jung01uber} relating the diameter of a point set $P$ and the radius of the minimum enclosing ball:
+\begin{equation}\label{eq:jung_inclusion}
+  \cech^\e(P) \subseteq \rips^\e(P) \subseteq \cech^{\jungd \e}(P),
+\end{equation}
+where the constant $\jungd = \sqrt{\frac{2d}{d+1}}$ (see~\cite{buchet15efficient}).
+
+As we will see the Rips complex may be used to verify coverage of a domain satisfying some minimal assumptions when we allow the sensors in our network to communicate at two radii $\alpha$ and $\beta$.
+In short, if the the inclusion of Rips complexes at scales $\alpha < \beta$ resembles the structure of a subset of the domain then the \v Cech complex at scale $\alpha$, and therefore $P^\alpha$, does as well.
+
+\textbf{TODO} simplicial complexes as ways to discretize space.
+
+
+% section complexes (end)
