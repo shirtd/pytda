@@ -8,7 +8,8 @@ In order to install Dionysus you will need
 
 To build the package and install all requirements run the following from the project's root directory
 
-    python setup.py -r build
+    pip install -r requirements.txt
+    python setup.py build
 
 A modified version of the PyDEC library (https://github.com/hirani/pydec) is included as it is currently not maintained.
 
