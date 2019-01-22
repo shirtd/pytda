@@ -4,6 +4,8 @@ test.py
 batch.py
 .pydec
 build
+main.py
+draw.py
 
 *.pkl
 .stash
@@ -14,7 +16,6 @@ tex/.build
 
 *.bbl
 *.blg
-*.pdf
 *.log
 *.fls
 *.aux
