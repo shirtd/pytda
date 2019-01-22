@@ -1,6 +1,57 @@
-from interact import *
+from ..plot import *
 from .. import *
 import argparse
+
+class HomologyPlot(SimplicialHomology, PersistencePlot):
+    def __init__(self, fig, ax, F, data, dim, t, prime, Q=[]):
+        PersistencePlot.__init__(self, fig, ax, 'homology')
+        SimplicialHomology.__init__(self, F, data, prime, Q, dim=dim, t=t)
+        self.initialize(range(1, dim + 1))
+    def get_cycle(self, pt):
+        return self.np_cycle(self.cycle(pt))
+    def plot(self, key):
+        if not key in self.cache:
+            self.cache[key] = self.get_cycle(key)
+        self.ax[1].cla()
+        self.plot_data(self.ax[1])
+        self.plot_edges(self.ax[1], self.data[self.cache[key]])
+
+class CohomologyPlot(SimplicialCohomology, PersistencePlot):
+    def __init__(self, fig, ax, F, data, dim, t, prime):
+        PersistencePlot.__init__(self, fig, ax, 'cohomology')
+        SimplicialCohomology.__init__(self, F, data, prime, dim=dim, t=t)
+        self.initialize(range(1, dim + 1))
+    def get_cocycle(self, pt):
+        return self.np_cycle(self.cocycle(pt))
+    def plot(self, key):
+        if not key in self.cache:
+            self.cache[key] = self.get_cocycle(key)
+        self.ax[1].cla()
+        self.plot_data(self.ax[1])
+        self.plot_edges(self.ax[1], self.data[self.cache[key]])
+
+class CircularPlot(SimplicialCohomology, PersistencePlot):
+    def __init__(self, fig, ax, F, data, dim, t, prime):
+        prime = prime if prime != 2 else 11
+        PersistencePlot.__init__(self, fig, ax, 'circular')
+        SimplicialCohomology.__init__(self, F, data, prime, dim=dim, t=t)
+        self.initialize([1])
+    def plot(self, key):
+        if not key in self.cache:
+            self.cache[key] = self.coords(key)
+        self.ax[1].cla()
+        self.plot_coords(self.ax[1], self.cache[key])
+
+class RipsInteract(Interact):
+    def __init__(self, data, dim, t, prime=2):
+        fig, ax = get_axes(1, 3, figsize=(11, 4))
+        map(lambda x: x.axis('equal'), ax)
+        classes = {'homology' : HomologyPlot,
+                    'cohomology' : CohomologyPlot,
+                    'circular' : CircularPlot}
+        F = dio.fill_rips(data, dim, t)
+        Interact.__init__(self, fig, ax, classes, F, data, dim, t, prime)
+        self.dim, self.t, self.prime = dim, t, prime
 
 parser = argparse.ArgumentParser(description='interactive cycles, cocycles, and circular coordinates.')
 parser.add_argument('-f','--fun', default='circular', help='persistence function. default: homology.')

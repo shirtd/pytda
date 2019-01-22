@@ -3,6 +3,7 @@ from numpy.random import seed, rand
 from itertools import combinations
 from scipy.sparse.linalg import cg
 from pydec import d, delta, star
+from ..plot import plot_edges
 from numpy.linalg import norm
 import numpy.linalg as la
 from ..persist import *

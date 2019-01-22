@@ -1,9 +1,9 @@
+from matplotlib.pyplot import Circle, Polygon
 from matplotlib.colors import Normalize
 from scipy.sparse import csc_matrix
 import matplotlib.cm as cm
 import dionysus as dio
 import numpy as np
-from plot import *
 
 def lfilt(f, F):
     return dio.Filtration(filter(f, F))
@@ -59,7 +59,7 @@ class DioFilt(DioWrap):
         kw['zorder'] = kw['zorder'] if 'zorder' in kw else 0
         kw['color'] = kw['color'] if 'color' in kw else 'black'
         I = I if len(I) else range(len(self.data))
-        map(lambda i: axis.add_artist(plt.Circle(self.data[i], r, **kw)), I)
+        map(lambda i: axis.add_artist(Circle(self.data[i], r, **kw)), I)
     def plot_vertex(self, axis, s):
         p = self.data[list(s)]
         kw = {'s' : 5, 'color' : 'black', 'alpha' : 1, 'zorder' : 2}
@@ -71,7 +71,7 @@ class DioFilt(DioWrap):
     def plot_triangle(self, axis, s):
         p = self.data[list(s)]
         kw = {'color' : 'black', 'alpha' : 0.1, 'zorder' : 0}
-        return axis.add_patch(plt.Polygon(p, **kw))
+        return axis.add_patch(Polygon(p, **kw))
     def plot_simplex(self, axis, i):
         s = i if isinstance(i, dio.Simplex) else self.F[i]
         if s.dimension() == 0:
