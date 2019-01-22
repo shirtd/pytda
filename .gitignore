@@ -6,6 +6,7 @@ batch.py
 build
 main.py
 draw.py
+cycles.py
 
 *.pkl
 .stash
