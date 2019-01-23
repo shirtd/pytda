@@ -5,8 +5,6 @@ batch.py
 .pydec
 build
 main.py
-draw.py
-cycles.py
 
 *.pkl
 .stash
