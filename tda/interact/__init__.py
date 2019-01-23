@@ -11,6 +11,7 @@ class HomologyPlot(SimplicialHomology, PersistencePlot):
         return self.np_cycle(self.cycle(pt))
     def plot(self, key):
         if not key in self.cache:
+            # print(' | saving cycle from point '+ str(key))
             self.cache[key] = self.get_cycle(key)
         self.ax[1].cla()
         self.plot_data(self.ax[1])
@@ -25,6 +26,7 @@ class CohomologyPlot(SimplicialCohomology, PersistencePlot):
         return self.np_cycle(self.cocycle(pt))
     def plot(self, key):
         if not key in self.cache:
+            # print(' | getting cocycle from point '+ str(key))
             self.cache[key] = self.get_cocycle(key)
         self.ax[1].cla()
         self.plot_data(self.ax[1])
@@ -38,6 +40,7 @@ class CircularPlot(SimplicialCohomology, PersistencePlot):
         self.initialize([1])
     def plot(self, key):
         if not key in self.cache:
+            # print(' | calculating circular coordinates from point '+ str(key))
             self.cache[key] = self.coords(key)
         self.ax[1].cla()
         self.plot_coords(self.ax[1], self.cache[key])
@@ -86,7 +89,16 @@ def interact(args, data, dim, t):
             if key: R.OBJ.plot(key)
         input = raw_input(' > ')
         if input in ['exit', 'quit', 'e', 'q']: break
+        elif input == 'save': query_axis(R.fig, R.ax)
         elif ' ' in input:
+            if 'save' in input:
+                cmds = input.split(' ')
+                i = int(cmds[1])
+                if len(cmds) == 2:
+                    fname = raw_input(': save ax[%d] as ' % i)
+                    save_axis(R.fig, R.ax[i], fname)
+                else:
+                    save_axis(R.fig, R.ax[i], cmds[2])
             args = process_cmd(args, input)
         else: continue
         R.OBJ.fig.canvas.mpl_disconnect(cid)

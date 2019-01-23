@@ -39,6 +39,25 @@ def plot_edges(axis, E, z=[], thresh=-np.Inf, **kw):
         color.set_array(filter(lambda a: a >= thresh, z))
         plt.colorbar(color, ax=axis)
 
+def query_axis(fig, ax):
+    i = raw_input(': select axis to save '+str(list(range(len(ax))))+': ')
+    try:
+        i = int(i)
+    except e:
+        print(' ! invalid entry')
+        i = query_axis(fig, ax)
+    fname = raw_input(': save as ')
+    save_axis(fig, ax[i], fname)
+
+def save_axis(fig, ax, fname):
+    fpath = os.path.dirname(fname)
+    if not os.path.exists(fpath):
+        print(' ! creating folders %s' % fpath)
+        os.makedirs(fpath)
+    print(' | saving %s' % fname)
+    extent = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+    fig.savefig(fname, bbox_inches=extent)
+
 
 ''''''''''''''''''
 '''  INTERACT  '''
@@ -78,6 +97,7 @@ class PersistencePlot(DioPersist):
     def query(self, e):
         self.last = e
         p = np.array([e.xdata, e.ydata])
+        # print('[ querying point '+str(p))
         if e.inaxes == self.ax[2]:
             ds = [(k, v.query(p)) for k, v in self.kd.iteritems()]
             dim, (d, idx) = min(ds, key=lambda (k, d): d[1])
@@ -85,6 +105,7 @@ class PersistencePlot(DioPersist):
             self.plot_dgm(self.ax[2])
             self.ax[2].scatter(pt.birth, pt.death, s=20, zorder=2, c='black')
             return pt
+        # print(' ! point not found')
         return None
     def plot_edges(self, axis, E, **kw):
         kw['c'] = kw['c'] if 'c' in kw else 'black'
