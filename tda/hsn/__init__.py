@@ -2,11 +2,14 @@ from collections import defaultdict
 from itertools import combinations
 from ..persist import *
 from network import *
+from ..plot import *
 from .. import *
 
 class GaussianNetwork:
-    def __init__(self, X, alpha, beta, bound, ax=[]):
+    def __init__(self, X, alpha, beta, bound, ax=[], fig=None):
         self.X, self.ax = X, ax
+        if len(ax):
+            self.fig = fig
         self.alpha, self.beta = alpha, beta
         self.extent = (-4.5, len(X) + 3.5, -4.5, len(X) + 3.5)
         self.bound = self.find_boundary(bound, len(ax) > 0)
@@ -53,7 +56,12 @@ class GaussianNetwork:
             self.plot_all(self.ax[2])
             plot_contours(self.ax[2], C0, c='black')
             plt.show(False)
-            wait(' : domain')
+            res = wait(' : domain')
+            if res:
+                for i, ax in enumerate(self.ax):
+                    fname = raw_input(' > save ax[%d] as ' % i)
+                    extent = ax.get_window_extent().transformed(self.fig.dpi_scale_trans.inverted())
+                    self.fig.savefig(fname, bbox_inches=extent)
     ''''''''''''''''''''
     ''' assumption 1 '''
     def test_size(self, plot=False):
@@ -68,7 +76,12 @@ class GaussianNetwork:
             self.plot_MC(self.ax[2])
             plot_contours(self.ax[2], C1, c='blue')
             plt.show(False)
-            wait(' : test_size  (%d -> %d)' % (len(poly0), len(poly1)))
+            res = wait(' : test_size  (%d -> %d)' % (len(poly0), len(poly1)))
+            if res:
+                for i, ax in enumerate(self.ax):
+                    fname = raw_input(' > save ax[%d] as ' % i)
+                    extent = ax.get_window_extent().transformed(self.fig.dpi_scale_trans.inverted())
+                    self.fig.savefig(fname, bbox_inches=extent)
         return (len(poly0) + len(poly1) and len(poly0) >= len(poly1)
             and all(any(p.within(q) for p in poly0) for q in poly1))
     ''''''''''''''''''''
@@ -85,7 +98,12 @@ class GaussianNetwork:
             self.plot_MD(self.ax[2])
             plot_contours(self.ax[2], C1, c='blue')
             plt.show(False)
-            wait(' : test_close (%d -> %d)' % (len(poly0), len(poly1)))
+            res = wait(' : test_close (%d -> %d)' % (len(poly0), len(poly1)))
+            if res:
+                for i, ax in enumerate(self.ax):
+                    fname = raw_input(' > save ax[%d] as ' % i)
+                    extent = ax.get_window_extent().transformed(self.fig.dpi_scale_trans.inverted())
+                    self.fig.savefig(fname, bbox_inches=extent)
         return len(poly0) <= len(poly1) and all(any(p.within(q) for q in poly1) for p in poly0)
     ''''''''''''''''''''''''''''''''''''
     ''' plot network and assumptions '''
@@ -103,8 +121,8 @@ class GaussianNetwork:
         self.plot_complement(axis, s=3, c='black', zorder=2)
 
 class HSN(RipsHomology, GaussianNetwork):
-    def __init__(self, X, dim, bound, alpha, beta, ax=[], delta=0.02, prime=2):
-        GaussianNetwork.__init__(self, X, alpha, beta, bound, ax)
+    def __init__(self, X, dim, bound, alpha, beta, ax=[], delta=0.02, prime=2, fig=None):
+        GaussianNetwork.__init__(self, X, alpha, beta, bound, ax, fig)
         data, Q = np.vstack((self.B, self.INT)), range(len(self.B))
         print('[ %d point interior, %d point boundary' % (len(self.INT), len(self.B)))
         RipsHomology.__init__(self, data, dim + 1, beta, prime, Q)
