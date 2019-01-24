@@ -1,0 +1,137 @@
+% !TeX root = main.tex
+\section{Background} % (fold)
+\label{sec:background}
+
+A \textbf{length space} is a metric space $(M,\dist)$ in which the distance between any two points $x,y\in M$ is equal to the infimum of the lengths of all paths from $x$ to $y$.
+Throughout we will consider a compact length space $(M,\dist)$, where there is a homeomorphism from $M$ to a compact subset of $\R^d$.
+
+To simplify notation we will interpret $M$ directly as a subset of $\R^d$, but with the metric $\dist$ on the points identified with $M$, rather than the Euclidean metric.
+We define the \textbf{complement} of a compact set $A\subseteq M$ as $\comp{A} := (\R^d\cup\{\infty\})\setminus A$, where $\R^d\cup\{\infty\}$ is the compactification of $\R^d$, which we note is homeomorphic to the $d$-sphere.
+
+
+If $A\subseteq M$ is endowed with weights $w_y\geq 0$ for all $y\in A$, the \textbf{weighted distance} from a point $x$ to a weighted point $y$ is defined as the power distance $\rho_y(x) :=\sqrt{\dist(x,y)^2+w_y^2}$.
+Such a set is referred to as a \textbf{weighted set}.
+We use weighted distances to model coverage by disks of varying radii, where larger weights correspond to smaller radii.
+These weights can be used to model high dimensional noise when the weights of each point are defined to be the distance to its projection onto a domain.
+
+Let $A\subseteq M$ be a weighted compact set.
+The \textbf{weighted $k$-nearest neighbor distance} from a point $x$ to a weighted compact set $A\subseteq M$ is defined as
+\[
+    \dist_k(x, A) :=\inf_{K\in {A\choose k}}\max_{y\in K} \rho_y(x).
+\]
+where $A\choose k$ denotes the collection of $k$-element subsets of $A$.
+The \textbf{weighted $(k,\e)$-offsets} of $A$ are defined as
+\[
+    A^\e_k := \left\{ x\in M\mid\dist_k(x,A)\leq\e\right\}.
+\]
+The \textbf{unweighted $\e$-offsets} of $A$ are defined as
+\[
+    A^\e := \left\{ x\in M\mid \min_{a\in A}\dist(x,a)\le\e\right\},
+\]
+Note that for any weighted set $A$, any $\e\ge 0 $, and any $k\ge 1$ we have  $A^\e_k\subseteq A^\e$.
+The \textbf{coverage region} of a point $a\in A$ at scale $\e$ is denoted $\cov(a,\e) = \left\{x\in M\mid\rho_a(x)\le \e\right\}$.
+
+\paragraph*{\textbf{Simplicial Complexes.}}
+    A \textbf{simplicial complex} $K$ is a collection of subsets, called \textbf{simplices}, of a vertex set $V$ that is closed under taking subsets.
+    That is, for all $\sigma\in K$ and $\tau\subset\sigma$ it must follow that $\tau\in K$.
+    The \textbf{dimension} of a simplex $\sigma\in K$ is defined as $\dim(\sigma) := |\sigma|-1$ where $|\cdot|$ denotes set cardinality.
+    The dimension of a simplicial complex $K$ is the maximum dimension of any simplex in $K$.
+    We define a \textbf{pair of complexes} to be a pair $(K,L)$ where $K$ is a simplicial complex and $L$ is a subcomplex of $K$.
+
+    A \textbf{graph} $G = (V,E)$ is defined to be a simplicial complex of dimension at most 1, consisting of a vertex set $V$ and an edge set $E\subseteq{V\choose 2}$.
+    Given a subset $U\subseteq V$ the \textbf{induced subgraph} in $G$ by $U$ is defined $G[U] := (U, E\cap{U\choose 2})$.
+
+    Given a graph $G = (V, E)$ a \textbf{clique} is a collection of vertices $\sigma\subseteq V$ such that for all $u,v\in\sigma$ the edge $\{u,v\}\in E$.
+    The \textbf{clique complex} of $G$ is defined to be a simplicial complex with simplices for each clique in $G$.
+    \[
+      \clique(G) := \{ \sigma\subseteq V\mid \forall u,v\in\sigma, \{u,v\}\in E \}
+    \]
+    Given a pair of graphs $(G, H)$ where $H$ is a subgraph of $G$, we will denote the pair of Clique complexes as $\clique(G,H) = (\clique(G),\clique(H))$.
+
+    The \textbf{\v Cech complex} of a finite collection of weighted points $A\subset M$ at scale $\e$ is defined as
+    \[
+      \cech^\e(A) := \left\{\sigma \subseteq A\mid \bigcap_{p\in \sigma}\cov(p,\e)\neq \emptyset \right\}.
+    \]
+    The \textbf{(Vietoris-)Rips complex} of $A$ at scale $\e$ is defined as
+    \[
+      \rips^\e(A) := \left\{\sigma \subseteq A \mid \{p,q\}\in\cech^\e(A) \text{ for all $p,q\in \sigma$}\right\}.
+    \]
+    The Rips complex is the clique complex derived from the edges in the \v Cech complex.
+
+    An important result about the relationship of \v Cech and Rips complexes follows from Jung's Theorem~\cite{jung01uber} relating the diameter of a point set $A$ and the radius of the minimum enclosing ball:
+    \begin{equation}\label{eq:jung_inclusion}
+      \cech^\e(A) \subseteq \rips^\e(A) \subseteq \cech^{\jungd \e}(A),
+    \end{equation}
+    where the constant $\jungd = \sqrt{\frac{2d}{d+1}}$ for unweighted sets and $\jungd = 2$ for weighted sets (see~\cite{buchet15efficient}).
+
+
+\paragraph*{\textbf{The $k$-Barycentric Decomposition.}} % fold
+    Given a simplicial complex $K$ we define a \textbf{flag} in $K$ to be an ordered subset of simplices $\{\sigma_1,\ldots,\sigma_t\}\subset K$ such that $\sigma_1\subset\ldots\subset\sigma_t$.
+    The \textbf{barycentric decomposition} of $K$ is the simplicial complex formed by the set of flags of $K$ and is defined as $\bary(K):= \left\{U\subset K\mid U\text{ is a flag of } K\right\}$.
+    The vertices of the barycentric decomposition are the simplices of $K$.
+    We define the \textbf{degree} of a flag $\sigma_1\subset \cdots \subset \sigma_t$ to be $|\sigma_1|$.
+    The \textbf{$k$-barycentric decomposition} of a complex $S$ is defined as
+    \[
+      \kbary(K) := \left\{U\subset K\mid U\text{ is a flag in $K$ with } |U|\geq k\right\}.
+    \]
+    The $k$-barycentric decomposition of the Clique complex of a graph $G$ will be denoted
+    \[
+      \clique_k(G) = \kbary(\clique(G)).
+    \]
+    Similarly, the $k$-barycentric decomposition of the \v Cech complex of a finite point set $A$ at a scale $\e$ will be denoted
+    \[
+      \cech_k^\e(A) = \kbary(\cech^\epsilon(A)).
+    \]
+
+\paragraph*{\textbf{Homology and Persistent Homology.}} % (fold)
+\label{par:homology_and_persistent_homology}
+
+    Homology is a tool from algebraic topology that gives a computable signature for a shape that is invariant under many topological equivalences, in particular homeomorphisms and homotopy equivalences.
+    It gives a way to quantify the components, loops, and voids in a topological space.
+    It is a favored tool for applications because its computation can be phrased as a matrix reduction problem with matrices representing a finite simplicial complex.
+
+    Throughout, we assume singular homology over a field, so the $k$th homology group $\hom_k(C)$ of a space $C$ is vector space.
+    When considering the homology groups of all dimensions, we will write $\hom_*(C)$.
+    We will make extensive use of relative homology.
+    That is, for a pair of spaces $(A,B)$ with $B\subseteq A$, we write $\hom_*(A,B)$ for the homology of $A$ relative to $B$.
+
+    We can also talk about the homology of a map between two spaces.
+    Given two spaces $A$ and $B$ and a map $f:A\rightarrow B$, we can consider the homology of both the spaces and the map for all homology groups due to the functoriality of homology, i.e.~we have a map $f_*=H_*(A)\rightarrow H_*(B)$, which we will denote $f_*:=H_*(A\rightarrow B)$.
+    Of particular interest in this work is the homology map induced by inclusion from one space to another, in which commutativity of diagrams of spaces is preserved when passed to a diagram of homology groups.
+
+\paragraph*{\textbf{Other Topological Notions.}} % (fold)
+\label{par:other_topological_notions}
+    We will employ several other standard notions from topology.
+    A space is \textbf{triangulable} if it is homeomorphic to a finite simplicial complex.
+    Triangulability acts as a non-degeneracy condition.
+
+    There are vector spaces dual to the homology groups called the \textbf{cohomology groups} and they are denoted with superscripts as $\hom^*(C)$ with respect to a space $C$.
+    For finite-dimensional homology groups, the so-called \textbf{Universal Coefficient Theorem} implies that the $r$-dimensional homology and cohomology groups are isomorphic.
+    This will allow us to switch between the two theories when it is convenient.
+
+    The other way we will switch between homology and cohomology is by \textbf{Alexander duality} which states, in general, that for pairs of nonempty compact spaces in $\R^d\cup \{\infty\}$, their $r$-dimensional relative homology is isomorphic to their complement spaces' $(d-r)$-dimensional relative cohomology, i.e.\ $\hom_r(X,Y)\cong \hom^{d-r}(\comp{Y},\comp{X})$,.
+    % The specific version we use will be discussed in Section~\ref{sec:algorithms}.
+
+
+\paragraph*{\textbf{Nerves and Persistent Nerves.}} % fold
+\label{par:nerves_and_persistent_nerves}
+    The \v Cech complex is a special case of a general construction known as a \textbf{nerve}.
+    Let $U = \{U_i \mid i \in I \}$ be a collection of sets, where $I$ is any indexing set.
+    The nerve of $U$ is the simplicial complex with vertex set $I$ such that $\sigma\subseteq I$ is a simplex if and only if $\bigcap_{i\in \sigma} U_i\neq \emptyset$.
+    We say that $U$ \textbf{covers} the set $\bigcup_{i\in I}U_i$ and it is a \textbf{good cover} if the intersections are empty or contractible.
+    For such covers, one can relate the nerve of the cover and union using the so-called Nerve Theorem.
+    Chazal and Oudot generalized the nerve theorem to the persistence setting~\cite{chazal08towards} and Sheehy extended it to $k$-coverage~\cite{sheehy12multicover}.
+    This is captured in the following lemma, where $(\cech_k^\e(A, B))=(\cech_k^\e(A),(\cech_k^\e(B))$.
+    \begin{lemma}\label{lem:nerve}
+      For any $B\subset A \subseteq M$, if the coverage regions $\{\cov(a,\alpha)\mid a\in A\}$ form a good cover of $A_1^\alpha$ and similarly for $A_1^\beta$, $B_1^\alpha$, and $B_1^\beta$, then the following diagram commutes for all $k$ and the vertical maps are isomorphisms.
+      \begin{equation*}\label{eq:nerve_diagram}
+          \xymatrix{
+              \hom_*(A^\alpha_k,B^\alpha_k)~\ar[r]\ar[d]^{\cong} & \hom_*(A^\beta_k,B^\beta_k)\ar[d]^{\cong} \\
+              \hom_*(\cech_k^\alpha(A, B))~\ar[r] & \hom_*(\cech_k^\beta(A, B))
+          }
+      \end{equation*}
+    \end{lemma}
+
+    % A combinatorial construction of this fact appears in~\cite{sheehy12multicover}, but a more direct topological argument can be found in Appendix~\ref{sec:multi_cover}.
+
+% section background (end)
