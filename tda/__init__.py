@@ -18,11 +18,11 @@ def circle(n=20, r=1., uniform=False, noise=0.1):
     return np.array([e*np.cos(2 * np.pi * t),
                     e*np.sin(2*np.pi*t)]).T.astype(np.float32)
 
-def double_circle(n=50, r=(1., 0.7), *args, **kwargs):
-    p1 = circle(int(n * r[0] / sum(r)), r[0], *args, **kwargs)
-    p2 = circle(int(n * r[1] / sum(r)), r[1], *args, **kwargs)
-    return np.vstack([p1 - np.array([r[0], 0.]),
-                    p2 + np.array([r[1], 0.])])
+def double_circle(n=50, r=(1., 0.7), uniform=False, noise=0.1):
+    p1 = circle(int(n * r[0] / sum(r)), r[0], uniform, noise)
+    p2 = circle(int(n * r[1] / sum(r)), r[1], uniform, noise)
+    return np.vstack([p1 - np.array([r[0] + noise, 0.]),
+                    p2 + np.array([r[1] + noise, 0.])])
 
 def torus(n=1000, R=0.7, r=0.25):
     t = 2*np.pi * np.random.rand(2, n)

@@ -1,5 +1,6 @@
 from matplotlib.pyplot import Circle, Polygon
 from matplotlib.colors import Normalize
+import matplotlib.patheffects as pfx
 from scipy.sparse import csc_matrix
 import matplotlib.cm as cm
 import dionysus as dio
@@ -100,6 +101,8 @@ class DioPersist(DioFilt):
     def to_np_dgm(self, dgm): return np_dgm(dgm)
     def np_dgm_dim(self, dim): return np_dgm(self.dgm_dim(dim))
     def np_dgm(self): return map(self.np_dgm_dim, range(len(self.D)))
+    def np_cycle_thresh(self, c, t):
+        return np.array([list(self.F[s.index]) for s in c if self.F[s.index].data <= t])
     def dgm_thresh(self):
         l = [x for dgm in self.np_dgm() if len(dgm) for x in dgm[:, 1]]
         deaths = np.array(filter(lambda d: d < np.Inf, l))
@@ -107,10 +110,10 @@ class DioPersist(DioFilt):
     def plot_dgm(self, axis):
         axis.cla()
         t = self.dgm_thresh()
-        axis.plot([0, t], [0, t], c='black', alpha=0.5)
+        axis.plot([0, t], [0, t], c='black', alpha=0.5, zorder=0)
         for dgm in self.np_dgm():
             if len(dgm):
-                axis.scatter(dgm[:,0], dgm[:,1], s=5)
+                axis.scatter(dgm[:,0], dgm[:,1], s=10, zorder=1)
 
 class DioHomology(DioPersist):
     def __init__(self, ffun, data, prime, Q, *args, **kwargs):
@@ -141,9 +144,14 @@ class DioCohomology(DioPersist):
     def coords(self, pt):
         c, f = self.cocycle(pt), self.threshold((pt.death + pt.birth) / 2.)
         return np.array(dio.smooth(f, c, self.prime))
-    def plot_coords(self, axis, v):
+    def plot_coords(self, axis, v, shadow=True):
         color = cm.ScalarMappable(Normalize(v.min(), v.max()), cm.rainbow)
-        axis.scatter(self.data[:,0], self.data[:,1], s=20, c=map(color.to_rgba, v))
+        kw = {'markersize' : 3}
+        if shadow:
+            kw['path_effects'] = [pfx.withSimplePatchShadow()]
+        for c, (x, y) in zip(v, self.data):
+            axis.plot(x, y, 'o', color=color.to_rgba(c), **kw)
+        # axis.scatter(self.data[:,0], self.data[:,1], s=20, c=map(color.to_rgba, v))
     # TODO generalize to dim > 1
     def lift_simplex(self, f, s):
         i, bdy = f.index(s), s.boundary()

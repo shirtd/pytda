@@ -6,13 +6,12 @@ import matplotlib.pyplot as plt
 import numpy.linalg as la
 import dionysus as dio
 import numpy as np
-from tda import save_pkl, load_pkl
 import sys
 
 plt.ion()
 ax = plt.subplot(111)
-ax.set_xlim(-0.9, 2.5)
-ax.set_ylim(-0.9, 2.5)
+ax.set_xlim(-1.6, 3.2)
+ax.set_ylim(-1.75, 3.2)
 
 def draw_poly(s, shadow=True, **kw):
     if shadow:
@@ -60,7 +59,9 @@ x = np.array([[0.21, -0.15],
             [1.45, 0.3],
             [0.83, 0.1]])
 
-fE = lambda i, j:  i != j and la.norm(x[i] - x[j]) <= 0.7
+t = 1.4
+
+fE = lambda i, j:  i != j and la.norm(x[i] - x[j]) <= t
 E = np.array([[i, j] for i in range(len(x)) for j in range(i) if fE(i, j)])
 fT = lambda i, j, k:  all(e in E.tolist() for e in ([i, j], [j, k], [i, k]))
 T = np.array([[i, j, k] for i in range(len(x)) for j in range(len(x)) for k in range(len(x)) if fT(i, j, k)])
@@ -68,9 +69,8 @@ T = np.array([[i, j, k] for i in range(len(x)) for j in range(len(x)) for k in r
 
 draw_points(x, c='black', zorder=3)
 draw_edges(x[E], c='black', zorder=2)
-draw_circles(x, 0.7, color='red', alpha=0.1, zorder=0)
-draw_polys(x[T], color='black', alpha=0.3, zorder=1)
-
+draw_circles(x, t, color='red', alpha=0.05, zorder=0)
+draw_polys(x[T], color='black', alpha=0.15, zorder=1)
 
 ax.axis('off')
 plt.gca().set_position([0, 0, 1, 1])

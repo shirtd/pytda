@@ -5,12 +5,6 @@
 Simplicial complexes not only provide a comprehensive discretization of continuous domains, but are the primary tool for concrete calculations in algebratic topology.
 In particular, the study of simplicial homology groups and its dual cohomology groups rely on simplicial complexes in order to study important topological invariants of a discretized space.
 
-% Given a $d$-dimensional simplicial complex $K$ we first induce an orientation on the simplices $\sigma\in K$ by imposing an ordering on its vertex set.
-% Two orderings are said to be equivalent if they differ from one another by an even permutation.
-% If $\dim(\sigma) > 0$ the orderings of the vertices of $\sigma$ fall into two equivalence classes, each called an \textbf{orientation} of $\sigma$.
-% An \textbf{oriented simplex} is a simplex $\sigma$ together with an orientation of $\sigma$.
-% We use the notation $[v_0,\ldots, v_p]$ to denote the oriented simplex consisting of vertices $v_0,\ldots, v_p$.
-
 \subsection{Homology}
 
 The following vector spaces may be defined over any field $\F$, however we will assume the field $\F_2$ in order to avoid orienting the simplices in $K$.
@@ -35,27 +29,9 @@ Two cycles in $\ker\partial_k$ are said to be \textbf{homologous} if they differ
 This leads us to the definition of the \textbf{homology groups} of $K$ as quotient vector spaces $H_k(K)$ over $\F$, defined for $k\in\N$ as
 \[ H_k(K) := \ker\partial_k/\im\partial_{k+1}.\]
 
-% A $p$-chain is defined as a functions $c$ from the set of oriented $p$-simplices of $K$ to the integers, such that
-% \begin{enumerate}
-%     \item $c(\sigma) = - c(\sigma')$ if $\sigma$ and $\sigma'$ are opposite orientations of the same simplex
-%     \item $c(\sigma) = 0$ for all but finitely many oriented $p$-simplices $\sigma$.
-% \end{enumerate}
-% We add $p$-chains by adding their values.
-% The resulting \textbf{group of (oriented) $p$-chains} of $K$ is denoted $C_p(K)$ for $p = 0,\ldots, d$.
-%
-% We now define a homomorphism
-% \[ \partial_p: C_p(K)\to C_{p-1}(K) \]
-% called the \textbf{boundary operator}.
-% For an oriented $p$-simplex with $p > 0$ it is defined
-% \[ \partial_p\sigma = \partial_p[v_0,\ldots, v_p] = \sum_{i=1}^p (-1)^i [v_0,\ldots,\hat{v_i},\ldots v_p] \]
-% where $\hat{v_i}$ indicates that the vertex $v_i$ is to be deleted from the array.
-%
-% There are two important groups which arise from the boundary operator on a chain group.
-% The group of \textbf{$p$-cycles}, denoted $Z_p(K)$ is defined as the kernel of $\partial_p:C_p(K)\to C_{p-1}(K)$ - that is, the collection of $p$-chains $c\in C_p(K)$ such that $\partial_p(c) = 0$.
-% The group of \textbf{$p$-boundaries}, denoted $B_p(K)$, is defined as the image of $\partial_{p+1}:C_{p+1}(K)\to C_p(K)$.
-% An important property of the boundary operater is that $\partial_{p-1}\circ\partial_p = 0$ for all $p$, implying that each boundary of a $p+1$ chain must be a $p$-cycle, and therefore $B_p(k)\subset Z_p(K)$.
-% We may now define the \textbf{$p$th homology group} of $K$ as the quotient group
-% \[ H_p(K) := Z_p(K)/B_p(K). \]
+The rank of each homology group is of particular importance and are known as the \textbf{Betti numbers} $\beta_k = \rank H_k(K)$.
+These topological invariants can be thought of as counting the number of $k$-dimensional ``holes'' in a topological space, where 0-dimensional holes are connected components, 1-dimensional holes are loops, 2-dimensional holes are voids, and so on.
+Note that this is the same notion which motivated our use of simplicial complexes for determining coverage - a 1-dimensional hole exists if a gap in a neighborhood graph cannot be filled by triangles.
 
 \subsection{Cohomology}
 
@@ -70,20 +46,37 @@ For a simplicial complex $K$ with chain complex $(C_*,\partial_*)$ define $C^k(K
 The coboundary maps $\delta_k$ are defined for cochains $\psi:C_k\to\R$ and $k$-simplices $\sigma\in K$ as
 \[\delta_k\psi(\sigma) = \psi(\partial_k\sigma).\]
 
-% The cohomology groups of a simplicial complex is dual to the homology groups, and provides a much richer algebraic structure.
-% For abelian groups $A, G$ we define the \textbf{Hom functor} $\Hom(A, B)$ as the group of homomorphisms from $A$ into $G$, where the addition of two homomorphisms is simply the addition of their values in $G$.
-% Let $K$ be a simplicial complex and $G$ be an abelian group.
-% The group of \textbf{$p$-dimensional cochains} of a simplicial complex $K$ is the group
-% \[ C^p(K; G) := \Hom(C_p(K), G). \]
-% That is, each $p$-cochain is a homeomorphism from a chain $c\in C_p(K)$ to the abelian group $G$.
-% The \textbf{coboundary operator} $\delta$ is defined to be the dual of the boundary operator $\partial_{p+1}: C_{p+1}(K)\to C_p(K)$:
-% \[\delta_p : C^p(K; G)\to C^{p+1}(K; G). \]
-% The \textbf{cohomology groups} are defined in the same way as the homology groups.
-% Letting $Z^p(K; G)$ denote the kernel of $\delta_p$ and $B^p(K; G)$ as the image of $\delta_{p-1}$ we have
-% \[ H^p(K; G) = Z^p(K; G)/B^p(K; G).\]
-% When the group $G$ is the integers $\Z$ we will write the cohomology group $H^p(K;\Z)$ as $H^p(K)$.
+\subsection{Relative Homology}
 
-\subsection{Relative Homology and Cohomology}
+For a simplicial complex $K$ let $L\subset K$ be a subcomplex of $K$.
+Let $\C(K, L)$ denote the quotient chain complex of pairs $(C_k(K, L), \overline{\partial_k})$ where $C_k(K, L) = C_k(K)/C_k(L)$ consists of the chains on $K$ modulo chains on $L$, with the induced boundary maps $\overline{\partial_k}$ on the quotients.
+Each relative chain is an equivalence class of chains in $K$ which are identical without the elements of $L$.
+The \textbf{relative homology groups} $H_k(K, L)$ consists of homology classes of relative cycles - chains in $K$ whose boundaries vanish or lie in $L$.
+That is, a relative cycle can either be a cycle in $K$ or a chain in $K$ with a boundary in $L$.
+
+As we will see, relative homology provides a powerful representation of a bounded domain that is particularily suited to verifying coverage of a sensor network.
+Let $\D$ be a bounded domain with boundary $\B\subset\D$.
+For illustrative purposes assume $\D$ is a connected, compact subset of the euclidean plane $\R^2$ so that certain properties of the relative homology of the pair $(\D, \B)$ are known.
+Namely, there is exactly one equivalence class in $H_2(\D, \B)$, as illustrated in figure~\ref{fig:balloons1}.
+We can think of the quotient as an identification of points in the boundary, illustrated by wrapping the planar domain around a single point in $\R^3$.
+As the domain is compact this creates a single void corresponding to the one generator in $H_2(\D, \B)$.
+
+\begin{figure}[htbp]
+\centering
+    \caption{}
+    \label{fig:balloons1}
+\end{figure}
+
+Now suppose our network $P$ covers the domain at some scale $\alpha > 0$ such that there are no gaps (1-cycles) in $\rips^\alpha(P)$.
+The subset $Q = \{p\in P\mid \ball_\alpha(p)\cap\B\neq\emptyset\}$ of points within distance $\alpha$ of $\B$ induces a subcomplex $\rips^\alpha(Q)$ of $\rips^\alpha(K)$.
+Under our assumptions the relative homology $H_2(\rips^\alpha(K), \rips^\alpha(Q))$ should reflect that of the domain.
+A gap in coverage can be thought of as ``popping the balloon'' in the sense that, if we wrap the simplices of $\rips^\alpha(K)$ around those in $\rips^\alpha(Q)$ we would have no void - the gap provides a hole through which the ``air'' can escape, as illustrated in figure~\ref{fig:balloons2}.
+
+\begin{figure}[htbp]
+\centering
+    \caption{}
+    \label{fig:balloons2}
+\end{figure}
 
 \subsection{Representative Cycles and Cocycles}
 
@@ -92,22 +85,74 @@ In general, $p$-cycles represent $p$-dimensional holes in the simplicial complex
 
 \begin{figure}[htbp]
 \centering
-    \includegraphics[scale=0.66]{figures/homology_cycle1.pdf}
-    \includegraphics[scale=0.66]{figures/cohomology_cocycle1.pdf}
-    \includegraphics[scale=0.66]{figures/circular_dgm1.pdf}
-     \caption{}
-     \label{fig:dgm1}
- \end{figure}
+    \includegraphics[scale=1.]{figures/homology_cycle.pdf}
+    \includegraphics[scale=1.]{figures/cohomology_cocycle.pdf}
+    % \includegraphics[scale=0.66]{figures/circular_dgm1.pdf}
+    \caption{}
+    \label{fig:cycles}
+\end{figure}
 
- \begin{figure}[htbp]
- \centering
-     \includegraphics[scale=0.66]{figures/homology_cycle2.pdf}
-     \includegraphics[scale=0.66]{figures/cohomology_cocycle2.pdf}
-     \includegraphics[scale=0.66]{figures/circular_dgm2.pdf}
-      \caption{}
-      \label{fig:dgm2}
-  \end{figure}
+As we will see representative cocycles are particularily useful in distributing the information contained in each Cohomology basis element throughout a simplicial complex.
+While this does not have an immediate application to our investigation of coverage in homological sensor network it is a powerful tool which may be used for future research in coordinate free sensor networks.
+
+% \begin{figure}[htbp]
+% \centering
+%     \includegraphics[scale=0.66]{figures/homology_cycle2.pdf}
+%     \includegraphics[scale=0.66]{figures/cohomology_cocycle2.pdf}
+%     \includegraphics[scale=0.66]{figures/circular_dgm2.pdf}
+%     \caption{}
+%     \label{fig:dgm2}
+% \end{figure}
 
 \subsection{Persistent Homology and Cohomology}
+
+Topological data analysis is an emerging field in the intersection of data analysis and algebraic topology which extends the notion of homology and cohomology groups to a more analytical tool known as \textbf{topological persistence}.
+Where simplicial (co)homology identifies invariants of a static simplicial complex persistent (co)homology tracks the evolution of a sequence of nested simplicial complexes which provide a more detailed topological signature, in addition to relevant geometric information.
+
+\begin{definition}
+    A \textbf{filtration} of a simplicial complex $K$ is a nested sequence of simplicial complexes \[K_0 \subset K_1\subset\ldots K_{n-1}\subset K_n = K.\]
+\end{definition}
+
+A filtration $\{K_i\}_{i=1,\ldots,n}$ may also be interpreted as a sequence of simplicial maps, each an inclusion $K_i\to K_{i+1}$.
+The resulting sequence induces an algebraic sequence of homomorphisms on (co)homology by the functoriality, for all $k$:
+\[ H_k(K_0)\to H_k(K_1)\to\ldots\to H_k(K_{n-1})\to H_k(K_n) = H_k(K). \]
+This sequence encodes the local topological changes that occur at each step of the filtration.
+Global information is encoded in terms of the \textbf{birth} and \textbf{death} of (co)homology classes, represented as a \textbf{persistence diagram} or \textbf{barcode}.
+
+\begin{figure}[htbp]
+\centering
+    \includegraphics[scale=0.4]{figures/persist06.pdf}
+    \includegraphics[scale=0.4]{figures/persist08.pdf}
+    \includegraphics[scale=0.4]{figures/persist10.pdf}
+    \includegraphics[scale=0.4]{figures/persist12.pdf}
+    \includegraphics[scale=0.4]{figures/persist14.pdf}
+    \caption{A filtration of rips complexes at scales 0.6, 0.8, 1.0, 1.2, and 1.4.
+            The 1-cycle that is born at scale 0.8 persists until it dies at scale 1.4,
+            resulting in a point $(0.8, 1.4)$ on the persistence diagram.}
+    \label{fig:persist}
+\end{figure}
+
+Given a rips complex $K = \rips^\alpha(P)$ of a finite metric space $P$ consisting of $n$ simplices we can order the simplices $\sigma_1,\ldots,\sigma_n$ by the minimum pairwise distance between their vertices.
+We first order the vertices $v_1,\ldots,v_m$ of $P$ and let $\sigma_i = \{v_i\}$ for $i=1,\ldots,m$ so that $K_i = \{\sigma_1,\ldots, \sigma_m\}$.
+We can then build a filtration $\{K_i\}_{i=1,\ldots,n}$ so that $K_i = \rips^\e(P)$ where $\e = \max_{u,v\in\sigma_i}\dist(u,v)$ by adding one simplex at a time, breaking ties first by dimension, then by the ordering on their constituent vertices.
+A $k$-dimensional feature is identified when a $(k+1)$-simplex $\sigma$ is added that kills a $k$-cycle $\gamma$.
+In the persistence diagram representation this feature would be represented by a point $(b, d)$ where $b$ is the smallest scale for which the $k$-cycle appears
+\[ \tau\in\rips^b(P)\text{ for all }\tau\in\gamma\]
+and $d = \max_{u,v\in\sigma}\dist(u,v)$ is the scale at which $\sigma$ enters the filtration.
+The result is a collection of points $(b_i, d_i)$ in the half-plane for each dimension known as the persistence diagram.
+
+
+\begin{figure}[htbp]
+\centering
+    \includegraphics[scale=0.9]{figures/homology_cycle.pdf}\hspace{10ex}
+    % \includegraphics[scale=0.6]{figures/cohomology_cocycle.pdf}
+    \includegraphics[scale=0.8]{figures/homology_dgm.pdf}
+    \caption{The representative cycle of a significant feature in the persistent homology of rips filtration of a noisy circle.
+            The birth of the feature indicated on the persistence diagram (right) corresponds to the scale of the rips complex shown (left) when the circle, a 1-cycle, is born.
+            The death of this feature corresponds to the scale of the rips complex at a larger scale (not shown) when a triangle first fills the interior of the circle.
+            This scale is approximately the length of the edges in the smallest equilateral triangle with sample points as vertices that contains the centroid of the sample.
+            This illustrates the geometric information encoded in the persistence diagram of geometric complexes as it is within a constant factor of the radius of the circle.}
+    \label{fig:cycle_diagrams}
+\end{figure}
 
 % section homology (end)

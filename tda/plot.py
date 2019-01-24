@@ -1,5 +1,6 @@
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.colors import Normalize
+import matplotlib.patheffects as pfx
 from scipy.spatial import KDTree
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -7,6 +8,7 @@ from operator import mul
 from persist import *
 import numpy as np
 from . import *
+import sys
 
 plt.ion()
 
@@ -51,7 +53,7 @@ def query_axis(fig, ax):
 
 def save_axis(fig, ax, fname):
     fpath = os.path.dirname(fname)
-    if not os.path.exists(fpath):
+    if fpath and not os.path.exists(fpath):
         print(' ! creating folders %s' % fpath)
         os.makedirs(fpath)
     print(' | saving %s' % fname)
@@ -64,40 +66,54 @@ def save_axis(fig, ax, fname):
 ''''''''''''''''''
 
 class Interact:
-    def __init__(self, fig, ax, classes, F, data, *args, **kw):
+    def __init__(self, fig, ax, classes, F, data, prime, *args, **kw):
         self.fig, self.ax, self.classes = fig, ax, classes
-        self.F, self.data = F, data
+        self.F, self.data, self.prime = F, data, prime
         self.args, self.kw = args, kw
         self.cache = {}
     def get_obj(self, fun, *args, **kw):
         if not fun in self.cache: # and self.cache[fun]
             self.cache[fun] = self.classes[fun](self.fig, self.ax, *args, **kw)
+        self.cache[fun].init_plot()
         return self.cache[fun]
     def anevent(self, fun): # , *args, **kw):
-        self.OBJ = self.get_obj(fun, self.F, self.data, *self.args, **self.kw)
+        self.OBJ = self.get_obj(fun, self.F, self.data, self.prime, *self.args, **self.kw)
         def event(e):
+            sys.stdout.write('\r')
+            sys.stdout.flush()
             key = self.OBJ.query(e)
             if key: self.OBJ.plot(key)
+            plt.show(False)
+            sys.stdout.write('> ')
+            sys.stdout.flush()
         return event
     def addevent(self, *args, **kwargs):
         fun = self.anevent(*args, **kwargs)
         return self.fig.canvas.mpl_connect('button_release_event', fun)
 
 class PersistencePlot(DioPersist):
-    def __init__(self, fig, ax, fun):
+    def __init__(self, fig, ax, fun, birth=True):
         self.fig, self.ax, self.fun = fig, ax, fun
+        self.birth, self.cycle_thresh = birth, np.Inf
+    def clear_ax(self, axis):
+        axis.cla()
+        axis.axis('equal')
+        axis.axis('off')
+    def clear(self):
+        map(self.clear_ax, self.ax)
     def initialize(self, dims):
         self.dims = dims
-        self.plot_data(self.ax[0], c='black')
-        self.plot_dgm(self.ax[2])
         self.dgms = self.sort_dgms_paired()
         dgms = map(self.to_np_dgm, self.dgms)
         self.kd = {d : KDTree(dgms[d]) for d in dims if len(dgms[d]) > 0}
         self.cache, self.last = {}, None
+        self.init_plot()
+    def init_plot(self):
+        self.plot_data(self.ax[0], c='black')
+        self.plot_dgm(self.ax[2])
     def query(self, e):
         self.last = e
         p = np.array([e.xdata, e.ydata])
-        # print('[ querying point '+str(p))
         if e.inaxes == self.ax[2]:
             ds = [(k, v.query(p)) for k, v in self.kd.iteritems()]
             dim, (d, idx) = min(ds, key=lambda (k, d): d[1])
@@ -105,15 +121,33 @@ class PersistencePlot(DioPersist):
             self.plot_dgm(self.ax[2])
             self.ax[2].scatter(pt.birth, pt.death, s=20, zorder=2, c='black')
             return pt
-        # print(' ! point not found')
         return None
-    def plot_edges(self, axis, E, **kw):
+    def thresh_cycle(self, key):
+        c = self.cache[key]
+        t = key.birth if self.birth else self.cycle_thresh
+        cycle = sorted(c, key=lambda e: self.F[e.index].data, reverse=True)
+        v, idx = zip(*[(x.element, x.index) for x in cycle])
+        i, n = 0, len(cycle)
+        ft = lambda l: self.F[idx[l]].data > t
+        fp = lambda l: sum(v[l:]) % self.prime != 0
+        while i < n and (ft(i) or fp(i)): i += 1
+        while i >= n or fp(i): i -= 1
+        return [self.F[j] for j in idx[i:]]
+    def replot(self):
+        if self.last != None:
+            key = self.query(self.last)
+            if key: self.plot(key)
+    def plot_edges(self, axis, E, shadow=True, **kw):
         kw['c'] = kw['c'] if 'c' in kw else 'black'
-        kw['alpha'] = kw['alpha'] if 'alpha' in kw else 0.3
+        kw['alpha'] = kw['alpha'] if 'alpha' in kw else 0.6
         kw['zorder'] = kw['zorder'] if 'zorder' in kw else 1
+        if shadow:
+            kw['path_effects'] = [pfx.SimpleLineShadow(), pfx.Normal()]
         map(lambda e: axis.plot(e[:,0], e[:,1], **kw), E)
-    def plot_data(self, axis, x=[], **kw):
+    def plot_data(self, axis, x=[], shadow=True, **kw):
         x = self.data if not len(x) else x
-        kw['s'] = kw['s'] if 's' in kw else 10
+        kw['markersize'] = kw['s'] if 's' in kw else 3
         kw['zorder'] = kw['zorder'] if 'zorder' in kw else 2
-        axis.scatter(self.data[:,0], self.data[:,1], **kw)
+        if shadow:
+            kw['path_effects'] = [pfx.withSimplePatchShadow()]
+        axis.plot(self.data[:,0], self.data[:,1], 'o', **kw)
