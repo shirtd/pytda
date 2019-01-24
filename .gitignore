@@ -5,6 +5,7 @@ batch.py
 .pydec
 build
 main.py
+main.pdf
 
 *.pkl
 .stash
