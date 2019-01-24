@@ -41,6 +41,14 @@ Each relative chain is an equivalence class of chains in $K$ which are identical
 The \textbf{relative homology groups} $H_k(K, L)$ consists of homology classes of relative cycles - chains in $K$ whose boundaries vanish or lie in $L$.
 That is, a relative cycle can either be a cycle in $K$ or a chain in $K$ with a boundary in $L$.
 
+\begin{figure}[htbp]
+\centering
+    \includegraphics[scale=0.5]{figures/balloons1.png}\vspace{2ex}
+    \includegraphics[scale=0.5]{figures/balloons3.png}
+    \caption{}
+    \label{fig:balloons1}
+\end{figure}
+
 As we will see, relative homology provides a powerful representation of a bounded domain that is particularily suited to verifying coverage of a sensor network.
 Let $\D$ be a bounded domain with boundary $\B\subset\D$.
 For illustrative purposes assume $\D$ is a connected, compact subset of the euclidean plane $\R^2$ so that certain properties of the relative homology of the pair $(\D, \B)$ are known.
@@ -50,20 +58,15 @@ As the domain is compact this creates a single void corresponding to the one gen
 
 \begin{figure}[htbp]
 \centering
+    \includegraphics[scale=0.5]{figures/balloons2.png}
     \caption{}
-    \label{fig:balloons1}
+    \label{fig:balloons2}
 \end{figure}
 
 Now suppose our network $P$ covers the domain at some scale $\alpha > 0$ such that there are no gaps (1-cycles) in $\rips^\alpha(P)$.
 The subset $Q = \{p\in P\mid \ball_\alpha(p)\cap\B\neq\emptyset\}$ of points within distance $\alpha$ of $\B$ induces a subcomplex $\rips^\alpha(Q)$ of $\rips^\alpha(K)$.
 Under our assumptions the relative homology $H_2(\rips^\alpha(K), \rips^\alpha(Q))$ should reflect that of the domain.
 A gap in coverage can be thought of as ``popping the balloon'' in the sense that, if we wrap the simplices of $\rips^\alpha(K)$ around those in $\rips^\alpha(Q)$ we would have no void - the gap provides a hole through which the ``air'' can escape, as illustrated in figure~\ref{fig:balloons2}.
-
-\begin{figure}[htbp]
-\centering
-    \caption{}
-    \label{fig:balloons2}
-\end{figure}
 
 \subsection{Functions and Filtrations}
 
