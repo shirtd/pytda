@@ -4,11 +4,17 @@
 \usepackage{graphicx, algorithm, enumerate, xspace, mathtools}
 \usepackage{amsthm, amssymb, amsmath, thmtools, thm-restate}
 \usepackage[noend]{algpseudocode}
-\usepackage{url}
 \usepackage[all]{xy}
+\usepackage{wrapfig}
+\usepackage{url}
 
 \input{etc/environments}
 \input{etc/macros}
+
+\newcommand{\kcoverage}[1]{}
+\newcommand{\nokcoverage}[1]{#1}
+\newcommand{\noeuclidean}[1]{}
+\newcommand{\euclidean}[1]{#1}
 
 \title{Preliminary Report on\\ Homological Methods for Sensor Network Integrity}
 \author{
@@ -23,6 +29,7 @@
 \input{src/complexes}
 \input{src/homology}
 \input{src/cohomology}
+\clearpage
 \input{src/tcc}
 \input{src/conclusion}
 
