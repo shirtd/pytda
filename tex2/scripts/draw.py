@@ -1,4 +1,6 @@
 from matplotlib.patheffects import SimpleLineShadow, Normal, withSimplePatchShadow
+# from matplotlib.collections import PolyCollection
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.colors import Normalize
 import matplotlib.pyplot as plt
@@ -88,14 +90,26 @@ def surface(ax, dirs=['..','figures'], ext='pdf'):
     plt.tight_layout()
     save(os.path.join(fpath, 'fsample.pdf'))
 
-    ax.cla()
-    ax.axis('off')
-    ax.scatter(p[:,0],p[:,1], c='black', zorder=1, alpha=0.)
+
+    # ax.cla()
+    # ax.axis('off')
+    # ax.scatter(p[:,0],p[:,1], c='black', zorder=1, alpha=0.)
     K = Delaunay(p)
-    for s in K.simplices:
-        ax.add_patch(plt.Polygon(p[s], color=cm.coolwarm(sum(z[s]) / 3.)[:-1], alpha=0.5, zorder=0))
+    # for s in K.simplices:
+    #     ax.add_patch(plt.Polygon(p[s], color=cm.coolwarm(sum(z[s]) / 3.)[:-1], alpha=0.5, zorder=0))
+    ax = plt.axes(projection='3d')
+    ax.axis('off')
+    zs = list(map(lambda s: sum(z[s]) / 3., K.simplices))
+    color = list(map(lambda s: cm.coolwarm(s)[:-1], zs))
+    p = np.vstack((p.T, np.array(z))).T
+    poly = Poly3DCollection(p[K.simplices], facecolors=color, alpha=0.5, zorder=0)
+    ax.add_collection3d(poly)
+    ax.set_xlim(0,63)
+    ax.set_ylim(0,63)
+    ax.set_zlim(0,1)
+    # ax.plot_trisurf(p[:,0], p[:,1], z, triangles=)
     plt.tight_layout()
-    save(os.path.join(fpath, 'fcomplex.pdf'))
+    # save(os.path.join(fpath, 'fcomplex.pdf'))
 
 plt.ion()
 # fig, ax = plt.subplots(1, 3, figsize=(11,4))
@@ -114,4 +128,4 @@ if __name__ == '__main__':
     # cover(ax, 0.51, 'rips1')
     # simplicial(ax, 0.51, 'rips1')
     # simplicial(ax, 0.58, 'rips2')
-    # surface(ax)
+    surface(ax)

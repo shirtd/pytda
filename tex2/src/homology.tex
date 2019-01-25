@@ -35,19 +35,21 @@ Note that this is the same notion which motivated our use of simplicial complexe
 
 \subsection{Relative Homology}
 
+\begin{figure}[htbp]
+\centering
+    \includegraphics[scale=0.5]{figures/balloons1.png}\vspace{2ex}
+    \includegraphics[scale=0.5]{figures/balloons3.png}
+    \caption{(Left) Two connected, planar domains with boundaries (in red).
+            We can gather some intuition for the relative homology of a pair $(\D,\B)$ by thinking about wrapping the interior of the domain around its boundary, and identifying all points in the boundary with a point (Right).
+            Even with disconnected boundaries we know that $\beta_2 = \rank~ H_2(\D, \B) = 1$.}
+    \label{fig:balloons1}
+\end{figure}
+
 For a simplicial complex $K$ let $L\subset K$ be a subcomplex of $K$.
 Let $\C(K, L)$ denote the quotient chain complex of pairs $(C_k(K, L), \overline{\partial_k})$ where $C_k(K, L) = C_k(K)/C_k(L)$ consists of the chains on $K$ modulo chains on $L$, with the induced boundary maps $\overline{\partial_k}$ on the quotients.
 Each relative chain is an equivalence class of chains in $K$ which are identical without the elements of $L$.
 The \textbf{relative homology groups} $H_k(K, L)$ consists of homology classes of relative cycles - chains in $K$ whose boundaries vanish or lie in $L$.
 That is, a relative cycle can either be a cycle in $K$ or a chain in $K$ with a boundary in $L$.
-
-\begin{figure}[htbp]
-\centering
-    \includegraphics[scale=0.5]{figures/balloons1.png}\vspace{2ex}
-    \includegraphics[scale=0.5]{figures/balloons3.png}
-    \caption{}
-    \label{fig:balloons1}
-\end{figure}
 
 As we will see, relative homology provides a powerful representation of a bounded domain that is particularily suited to verifying coverage of a sensor network.
 Let $\D$ be a bounded domain with boundary $\B\subset\D$.
@@ -59,7 +61,7 @@ As the domain is compact this creates a single void corresponding to the one gen
 \begin{figure}[htbp]
 \centering
     \includegraphics[scale=0.5]{figures/balloons2.png}
-    \caption{}
+    \caption{If there is a gap in the domain that is not a part of the boundary then $\beta_2 = \rank~ H_2(\D, \B) = 0$ as there is no void.}
     \label{fig:balloons2}
 \end{figure}
 
@@ -72,12 +74,12 @@ A gap in coverage can be thought of as ``popping the balloon'' in the sense that
 
 \begin{figure}[htbp]
 \centering
-    \includegraphics[scale=0.5]{figures/fgrid.pdf}\hspace{-0.5in}
+    \includegraphics[scale=0.45]{figures/fgrid.pdf}
     % \includegraphics[scale=0.45]{figures/fsample.pdf}
-    \includegraphics[scale=0.5]{figures/fcomplex.pdf}
-    \caption{(Left) Function on the plane.
+    \includegraphics[scale=0.55]{figures/fcomplex.pdf}
+    \caption{(Left) Continuous function on the plane.
             % (Middle) Function values on random sample.
-            (Right) Function values on the 2-simplices of a simplicial complex on the random sample.}
+            (Right) Function values on a random sample extended to a continuous piecewise linear approximation on a 2-dimension simplicial as the $z$-axis.}
     \label{fig:function}
 \end{figure}
 
@@ -99,9 +101,9 @@ This induces an algebraic sequence of homomorphisms on homology by functoriality
 This sequence encodes the local topological changes that occur at each step of the filtration.
 Global information is encoded in terms of the \textbf{birth} and \textbf{death} of homology classes, represented as a \textbf{persistence diagram} or \textbf{barcode}.
 
-\vspace{0.25in}
-\textbf{TODO} Persistence diagram of a function on a simplicial complex
-\vspace{0.25in}
+% \vspace{0.25in}
+% \textbf{TODO} Persistence diagram of a function on a simplicial complex
+% \vspace{0.25in}
 
 \begin{figure}[htbp]
 \centering
@@ -143,12 +145,11 @@ The resulting filtration is now a sequence of simplicial maps, each an inclusion
 Just as we can construct a filtration from a function on a simplicial complex we can construct a filtration from the metric induced on our sample by the domain.
 Let $P$ be a finite metric space with $m$ points and let $K = \rips^\alpha(P)$ be the rips complex of $P$ at scale $\alpha$ consisting of $n$ simplices.
 We can order the simplices $\sigma_1,\ldots,\sigma_n$ by the minimum pairwise distance between their vertices by first applying an arbitrary ordering on the vertices $v_1,\ldots,v_m$ and letting $\sigma_i = \{v_i\}$ for $i=1,\ldots,m$ so that $K_i = \{\sigma_1,\ldots, \sigma_m\}$.
-We can then build a filtration $\{K_i\}_{i=1,\ldots,n}$ so that $K_i = \rips^\e(P)$ where $\e = \max_{u,v\in\sigma_i}\dist(u,v)$ by adding one simplex at a time, breaking ties first by dimension, then by the ordering on their constituent vertices.
+We can then build a filtration $\K = \{K_i\}_{i=1,\ldots,n}$ so that $K_i = \rips^\e(P)$ where $\e = \max_{u,v\in\sigma_i}\dist(u,v)$ by adding one simplex at a time, breaking ties first by dimension, then by the ordering on their constituent vertices.
 A $k$-dimensional feature is identified when a $(k+1)$-simplex $\sigma$ is added that kills a $k$-cycle $\gamma$.
 In the persistence diagram representation this feature would be represented by a point $(b, d)$ where $b$ is the smallest scale for which the $k$-cycle appears
 \[ \tau\in\rips^b(P)\text{ for all }\tau\in\gamma\]
 and $d = \max_{u,v\in\sigma}\dist(u,v)$ is the scale at which $\sigma$ enters the filtration.
-The result is a collection of points $(b_i, d_i)$ in the half-plane for each dimension known as the persistence diagram.
-
+The result is a collection of points $(b_i, d_i)$ in the half-plane for each dimension $k$ known as the persistence diagram, denoted $\dgm_k(\K)$.
 
 % section homology (end)
