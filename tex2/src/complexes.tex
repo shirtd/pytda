@@ -10,7 +10,7 @@ Note that, although sensors can communicate within this distance they are not ab
 
 With this limited capability we can construct an undirected graph $G=(V,E)$ with vertices $V=P$ and edges $E = \{\{p, q\}\subset P\mid \dist(p,q)\leq\alpha\}$.
 In order to determine coverage we must at least assert that the coverage domain spanned by the points in $P$ does not contain any holes.
-Assuming the coverage radius of our sensors is equal to their communication radius $\alpha$ we may define a hole in coverage as a cycle that cannot be ``filled'' with triangles.
+Assuming the coverage radius of our sensors is equal to their communication radius $\alpha$ we may define a hole in coverage as a cycle that cannot be ``filled'' with triangles (see Fig.~\ref{fig:fig:holes}).
 This leads us to a more natural construction known as a simplicial complex.
 \begin{definition}
    A \textbf{simplicial complex} $K$ is a collection of subsets, called \textbf{simplices}, of a vertex set $V$ such that for all $\sigma\in K$ and $\tau\subset\sigma$ it must follow that $\tau\in K$.
@@ -37,6 +37,7 @@ In the next section we will formally define $k$-cycles and introduce simplicial 
 % As such, simplicial complexes serve offer a more robust discrete representation of high dimensional domains.
 Let $K$ be a simplicial complex with 0-simplices $\{v\}$ for all $p\in P$, 1-simpices $\{u, v\}\subset P$ for each edge in $E$, and 2-simplices $\{u,v,w\}\subset P$ whenever $\{\{\{u,v\},\{v,w\},\{u,w\}\}\subset E$.
 This particular simplicial complex is known as the Vietoris-Rips complex.
+It is also an example of a clique complex, where the simplices are the complete subgraphs (or cliques) in a given graph.
 \begin{definition}
     The \textbf{(Vietoris-)Rips complex} is defined for a set $P$ at scale $\e > 0$ as
     \[ \rips^\e(P) = \left\{\sigma \subseteq P\mid \forall p,q\in\sigma,\ \dist(p, q)\leq\e\right\}. \]

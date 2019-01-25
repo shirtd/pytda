@@ -5,12 +5,12 @@
   The purpose of this report is to present research and development progress on questions regarding sensor network integrity using tools from \emph{topological data analysis} (\emph{TDA}).
   The style is intended to be pedagogical, walking the reader through the main ideas, emphasizing pictures over proofs to communicate intuition.
   The primary work thus far has been to integrate several different tools and combine them with visualization to do experimental data analysis.
-  We will discuss the basic theory and the principle ideas along with examples and their visualization.
+  We will discuss the basic theory and the principal ideas along with examples and their visualization.
 
   Throughout, we will assume that a sensor network is a collection of sensors, deployed in some environment with the ability to detect nearby sensors and do some other types of measurement.
-  The sensors measure some quiantity, like temperature, that is assumed to be a continuous function on the domain.
+  The sensors measure some quantity, like temperature, that is assumed to be a continuous function on the domain.
   In this light, the sensor network is a finite sample from an unknown function on an unknown space.
-  The neighbor information of the sensors is correlated to distances in the domain, but the locations of the sensors (i.e. as coordinates) is not known.
+  The neighbor information of the sensors is correlated to distances in the domain, but the locations of the sensors (i.e. as coordinates) are not known.
 
   It is a challenging theoretical (and practical) setting in which to work.
   One feels intuitively that there will be very strong limits on what can be computed given the strict limits on the inputs.
@@ -29,10 +29,10 @@
   Interestingly, the theory implies that these are the \emph{only} places such errors can hide.
 
   The basic setting is elaborated in Section~\ref{sec:complexes}, where it is explained how the neighborhood graph is augmented to form a larger discrete structure that can be used to represent continuous functions on the the unknown domain.
-  This is the basic objec that one computes and visualizes throughout this work.
+  This is the basic object that one computes and visualizes throughout this work.
 
   The first topological tool to consider is homology.
-  In Section~\ref{sec:homology}, we explain the basic principles of homolopgy adn how they relate to the complexes of Section~\ref{sec:complexes} and the sensor networks more generally.
+  In Section~\ref{sec:homology}, we explain the basic principles of homology and how they relate to the complexes of Section~\ref{sec:complexes} and to sensor networks more generally.
   The main theme is that homology gives a language for describing (and counting) holes in the network in a mathematically rigorous way.
   Moreover, the holes can be ascribed some ``size'' or other quantitative information using persistent homology.
   Section~\ref{sec:homology} also presents some examples of the visualization of persistent homology in sample networks, showing both the persistent homology (as a persistence diagram) as well as a representative of the most significant hole.
@@ -41,7 +41,7 @@
   However, there is a dual theory of cohomology that is in many senses, the more natural language for expressing and studying functions on the domain.
   Section~\ref{sec:cohomology} gives the basic definitions of cohomology.
   One interpretation of the cohomology theory we are using is as global structure of a discrete version of differential forms.
-  Seeing as differential forms are a tool for doing caculus without coordinates, it makes sense that discrete differential forms allow us to do some calculus on discrete complexes arising from sensor networks.
+  Seeing as differential forms are a tool for doing caculus without coordinates, it makes sense that discrete differential forms allow us to do some calculus on discrete complexes arising from coordinate-free sensor networks.
   There is an extensive package by researchers at the University of Illinois implementing Discrete Exterior Calculus~\cite{bell12pydec} that we have integrated into our codebase (See also the book by Grady and Polimeni~\cite{grady10discrete}).
   We give some examples of using that code to visualize cohomology.
 
