@@ -1,8 +1,11 @@
+from matplotlib.patches import PathPatch
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.colors import Normalize
 import matplotlib.patheffects as pfx
+from matplotlib.path import Path
 from scipy.spatial import KDTree
 import matplotlib.pyplot as plt
+from shapely.geometry import *
 import matplotlib.cm as cm
 from operator import mul
 from persist import *
@@ -41,11 +44,37 @@ def plot_edges(axis, E, z=[], thresh=-np.Inf, **kw):
         color.set_array(filter(lambda a: a >= thresh, z))
         plt.colorbar(color, ax=axis)
 
+def ring_coding(ob):
+    n = len(ob.coords)
+    codes = np.ones(n, dtype=Path.code_type) * Path.LINETO
+    codes[0] = Path.MOVETO
+    return codes
+
+def pathify(p):
+    vertices = np.concatenate([np.asarray(p.exterior)]
+                + [np.asarray(r) for r in p.interiors])
+    codes = np.concatenate([ring_coding(p.exterior)]
+                + [ring_coding(r) for r in p.interiors])
+    return Path(vertices, codes)
+
+def plot_poly(axis, poly, shadow=True, **kw):
+    if 'c' in kw:
+        kw['color'] = kw['c']
+        del kw['c']
+    if shadow:
+        kw['path_effects'] = [pfx.withSimplePatchShadow()]
+    map(lambda p: axis.add_patch(PathPatch(pathify(p), **kw)), poly)
+
+def plot_contours(axis, C, shadow=True, **kw):
+    if shadow:
+        kw['path_effects'] = [pfx.SimpleLineShadow(), pfx.Normal()]
+    return map(lambda c: axis.plot(c[:,0], c[:,1], **kw), C)
+
 def query_axis(fig, ax):
     i = raw_input(': select axis to save '+str(list(range(len(ax))))+': ')
     try:
         i = int(i)
-    except e:
+    except:
         print(' ! invalid entry')
         i = query_axis(fig, ax)
     fname = raw_input(': save as ')

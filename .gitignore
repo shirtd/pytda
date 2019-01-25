@@ -9,6 +9,7 @@ main.pdf
 
 *.pkl
 .stash
+.data
 data
 batch
 tex/background.tex

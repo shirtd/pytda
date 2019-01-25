@@ -11,9 +11,6 @@ from .. import *
 ''' GAUSSIAN NETWORK UTIL  '''
 ''''''''''''''''''''''''''''''
 
-def plot_contours(axis, C, **kwargs):
-    return map(lambda c: axis.plot(c[:,0], c[:,1], **kwargs), C)
-
 def in_hull(p, n):
     return 0 in p or n - 1 in p
 

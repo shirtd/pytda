@@ -24,7 +24,9 @@ That is, a graph is a 1-dimensional simplicial complex in which vertices and edg
     \includegraphics[scale=0.33]{figures/holes_cover.pdf}
     \includegraphics[scale=0.33]{figures/holes_edges.pdf}
     \includegraphics[scale=0.33]{figures/holes_complex.pdf}
-     \caption{}
+     \caption{(Left) The coverage regions of a collection of points $P$ at some scale $\alpha$.
+            (Middle) The neighborhood graph with edges for each pair of points within pairwise distance $\alpha$.
+            (Right) If we attempt to fill cycles in the graph with triangles identify a cycle that cannot be filled which reflects a gap in coverage}
      \label{fig:holes}
  \end{figure}
 
@@ -73,7 +75,9 @@ With this assumption we know that the converse problem is true: if a sensor netw
     \includegraphics[scale=0.33]{figures/boundary_complex.pdf}
     \includegraphics[scale=0.33]{figures/boundary_complex_domain_fence.pdf}
     % \includegraphics[scale=0.24]{figures/boundary_domain.pdf}
-     \caption{}
+     \caption{(Left) The neighborhood graph of a sensor network with a large ``hole''.
+            (Middle) A 2-dimensional simplicial complex with no gaps in coverage, but an unfilled cycle.
+            (Right) By allowing nodes to identify the boundary (in red) we can confirm coverage of complex domains.}
      \label{fig:boundary1}
  \end{figure}
 
@@ -84,8 +88,8 @@ Let $Q = \{p\in P\mid \min_{x\in\B}\dist(x, p)\}$ be the set of \textbf{boundary
 The set $Q$ induces a \textbf{subcomplex} $\rips^\alpha(Q)$ of $\rips^\alpha(K)$ restricted to nodes in $Q$.
 % Assuming there are no holes in our network no path from a point in $P\setminus Q$ to a point outside our domain  without crossing a simplex in $K\mid_Q$.
 
-\textbf{TODO} Section overview.
-We will show how this construction is used to verify coverage of a specific subset of a bounded domain $\D$ with a tight bound on the coverage radius.
+% \textbf{TODO} Section overview.
+% We will show how this construction is used to verify coverage of a specific subset of a bounded domain $\D$ with a tight bound on the coverage radius.
 
 % Note that the communication radius is far from a tight bound on the coverage radius.
 

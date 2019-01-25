@@ -61,28 +61,51 @@ class DioFilt(DioWrap):
         kw['color'] = kw['color'] if 'color' in kw else 'black'
         I = I if len(I) else range(len(self.data))
         map(lambda i: axis.add_artist(Circle(self.data[i], r, **kw)), I)
-    def plot_vertex(self, axis, s):
+    def plot_vertex(self, axis, s, shadow=True, **kw):
         p = self.data[list(s)]
-        kw = {'s' : 5, 'color' : 'black', 'alpha' : 1, 'zorder' : 2}
-        return axis.scatter(p[:,0], p[:,1], **kw)
-    def plot_edge(self, axis, s):
+        if 'color' in kw:
+            kw['c'] = kw['color']
+            del kw['color']
+        kw['c'] = 'black' if not 'c' in kw else kw['c']
+        kw['alpha'] = 1 if not 'alpha' in kw else kw['alpha']
+        kw['zorder'] = 2 if not 'zorder' in kw else kw['zorder']
+        kw['markersize'] = 1 if not 'markersize' in kw else kw['markersize']
+        if shadow:
+            kw['path_effects'] = [pfx.withSimplePatchShadow()]
+        return axis.plot(p[:,0], p[:,1], 'o', **kw)
+    def plot_edge(self, axis, s, shadow=True, **kw):
         p = self.data[list(s)]
+        if 'color' in kw:
+            kw['c'] = kw['color']
+            del kw['color']
+        kw['c'] = 'black' if not 'c' in kw else kw['c']
+        kw['alpha'] = 0.5 if not 'alpha' in kw else kw['alpha']
+        kw['zorder'] = 1 if not 'zorder' in kw else kw['zorder']
         kw = {'color' : 'black', 'alpha' : 0.5, 'zorder' : 1}
+        if shadow:
+            kw['path_effects'] = [pfx.SimpleLineShadow(), pfx.Normal()]
         return axis.plot(p[:,0], p[:,1], **kw)
-    def plot_triangle(self, axis, s):
+    def plot_triangle(self, axis, s, shadow=True, **kw):
         p = self.data[list(s)]
-        kw = {'color' : 'black', 'alpha' : 0.1, 'zorder' : 0}
+        if 'c' in kw:
+            kw['color'] = kw['c']
+            del kw['c']
+        kw['color'] = 'black' if not 'color' in kw else kw['color']
+        kw['alpha'] = 0.1 if not 'alpha' in kw else kw['alpha']
+        kw['zorder'] = 0 if not 'zorder' in kw else kw['zorder']
+        if shadow:
+            kw['path_effects'] = [pfx.withSimplePatchShadow()]
         return axis.add_patch(Polygon(p, **kw))
-    def plot_simplex(self, axis, i):
+    def plot_simplex(self, axis, i, shadow=True, **kw):
         s = i if isinstance(i, dio.Simplex) else self.F[i]
         if s.dimension() == 0:
-            return self.plot_vertex(axis, s)
+            return self.plot_vertex(axis, s, shadow, **kw)
         elif s.dimension() == 1:
-            return self.plot_edge(axis, s)
+            return self.plot_edge(axis, s, shadow, **kw)
         elif s.dimension() == 2:
-            return self.plot_triangle(axis, s)
-    def plot_simplices(self, axis, S):
-        map(lambda s: self.plot_simplex(axis, s), S)
+            return self.plot_triangle(axis, s, shadow, **kw)
+    def plot_simplices(self, axis, S, shadow=True, **kw):
+        map(lambda s: self.plot_simplex(axis, s, shadow, **kw), S)
 
 class DioPersist(DioFilt):
     def __init__(self, ffun, pfun, data, prime):
