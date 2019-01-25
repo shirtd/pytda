@@ -56,17 +56,17 @@ Namely, there is exactly one equivalence class in $H_2(\D, \B)$, as illustrated 
 We can think of the quotient as an identification of points in the boundary, illustrated by wrapping the planar domain around a single point in $\R^3$.
 As the domain is compact this creates a single void corresponding to the one generator in $H_2(\D, \B)$.
 
+Now suppose our network $P$ covers the domain at some scale $\alpha > 0$ such that there are no gaps (1-cycles) in $\rips^\alpha(P)$.
+The subset $Q = \{p\in P\mid \ball_\alpha(p)\cap\B\neq\emptyset\}$ of points within distance $\alpha$ of $\B$ induces a subcomplex $\rips^\alpha(Q)$ of $\rips^\alpha(K)$.
+Under our assumptions the relative homology $H_2(\rips^\alpha(K), \rips^\alpha(Q))$ should reflect that of the domain.
+A gap in coverage can be thought of as ``popping the balloon'' in the sense that, if we wrap the simplices of $\rips^\alpha(K)$ around those in $\rips^\alpha(Q)$ we would have no void - the gap provides a hole through which the ``air'' can escape, as illustrated in figure~\ref{fig:balloons2}.
+
 \begin{figure}[htbp]
 \centering
     \includegraphics[scale=0.5]{figures/balloons2.png}
     \caption{}
     \label{fig:balloons2}
 \end{figure}
-
-Now suppose our network $P$ covers the domain at some scale $\alpha > 0$ such that there are no gaps (1-cycles) in $\rips^\alpha(P)$.
-The subset $Q = \{p\in P\mid \ball_\alpha(p)\cap\B\neq\emptyset\}$ of points within distance $\alpha$ of $\B$ induces a subcomplex $\rips^\alpha(Q)$ of $\rips^\alpha(K)$.
-Under our assumptions the relative homology $H_2(\rips^\alpha(K), \rips^\alpha(Q))$ should reflect that of the domain.
-A gap in coverage can be thought of as ``popping the balloon'' in the sense that, if we wrap the simplices of $\rips^\alpha(K)$ around those in $\rips^\alpha(Q)$ we would have no void - the gap provides a hole through which the ``air'' can escape, as illustrated in figure~\ref{fig:balloons2}.
 
 \subsection{Functions and Filtrations}
 
@@ -143,12 +143,11 @@ The resulting filtration is now a sequence of simplicial maps, each an inclusion
 Just as we can construct a filtration from a function on a simplicial complex we can construct a filtration from the metric induced on our sample by the domain.
 Let $P$ be a finite metric space with $m$ points and let $K = \rips^\alpha(P)$ be the rips complex of $P$ at scale $\alpha$ consisting of $n$ simplices.
 We can order the simplices $\sigma_1,\ldots,\sigma_n$ by the minimum pairwise distance between their vertices by first applying an arbitrary ordering on the vertices $v_1,\ldots,v_m$ and letting $\sigma_i = \{v_i\}$ for $i=1,\ldots,m$ so that $K_i = \{\sigma_1,\ldots, \sigma_m\}$.
-We can then build a filtration $\{K_i\}_{i=1,\ldots,n}$ so that $K_i = \rips^\e(P)$ where $\e = \max_{u,v\in\sigma_i}\dist(u,v)$ by adding one simplex at a time, breaking ties first by dimension, then by the ordering on their constituent vertices.
+We can then build a filtration $\K = \{K_i\}_{i=1,\ldots,n}$ so that $K_i = \rips^\e(P)$ where $\e = \max_{u,v\in\sigma_i}\dist(u,v)$ by adding one simplex at a time, breaking ties first by dimension, then by the ordering on their constituent vertices.
 A $k$-dimensional feature is identified when a $(k+1)$-simplex $\sigma$ is added that kills a $k$-cycle $\gamma$.
 In the persistence diagram representation this feature would be represented by a point $(b, d)$ where $b$ is the smallest scale for which the $k$-cycle appears
 \[ \tau\in\rips^b(P)\text{ for all }\tau\in\gamma\]
 and $d = \max_{u,v\in\sigma}\dist(u,v)$ is the scale at which $\sigma$ enters the filtration.
-The result is a collection of points $(b_i, d_i)$ in the half-plane for each dimension known as the persistence diagram.
-
+The result is a collection of points $(b_i, d_i)$ in the half-plane for each dimension $k$ known as the persistence diagram, denoted $\dgm_k(\K)$.
 
 % section homology (end)
