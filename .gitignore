@@ -13,6 +13,7 @@ data
 batch
 tex/background.tex
 tex/.build
+tcc_nok.tex
 
 *.bbl
 *.blg
