@@ -5,7 +5,7 @@ from network import *
 from ..plot import *
 from .. import *
 
-PAD = 6
+PAD = 8
 
 class GaussianNetwork:
     def __init__(self, X, alpha, beta, bound, noise, fig=None, ax=[]):
@@ -15,6 +15,7 @@ class GaussianNetwork:
         self.alpha, self.beta, self.noise = alpha, beta, noise
         self.extent = (-1.*(PAD + 0.5), len(X) + PAD-0.5,
                         -1.*(PAD + 0.5), len(X) + PAD-0.5)
+        self.contour, self.poly = {}, {}
         self.bound = self.find_boundary(bound, len(ax) > 0)
     def add_noise(self, x):
         x = np.array(x, dtype=float)
@@ -23,13 +24,12 @@ class GaussianNetwork:
     ''''''''''''''''''''''''''''''''''''''''''''''''
     '''  generate domain satisfying assumptions  '''
     def find_boundary(self, bound, plot=False, delta=0.02):
-        while True:
+        bound -= delta
+        while bound < 1:
+            bound += delta
             print('[ bound = %0.2f' % bound)
             self.get_domain(bound, plot)
-            if self.test_size(plot):
-                if self.test_close(plot):
-                    break
-            bound += delta
+            if self.test_size(plot) and self.test_close(plot): break
             delete_line()
         return bound
     ''''''''''''''''''''''''''''''''''''
@@ -41,51 +41,25 @@ class GaussianNetwork:
         _G = self.add_noise(G)
         D0_idx = np.vstack(filter(lambda (i, j): self.X[i, j] <= bound, G0))
         self.M = distance_grid(D0_idx, G_idx)
-        C0 = find_contours_ext(self.M.T, self.noise, PAD)
-        # T = spatial.KDTree(G)
+        B0 = find_contours_ext(self.M.T, self.noise, PAD)
+        self.contour['B'] = B0
         T = spatial.KDTree(_G)
         Y = [l for l, (i, j) in enumerate(G + PAD) if self.M.T[i, j] <= self.noise]
-        L = np.unique(np.concatenate(T.query_ball_point(np.vstack(C0), self.alpha)))
+        L = np.unique(np.concatenate(T.query_ball_point(np.vstack(B0), self.alpha)))
         I = np.intersect1d(L, Y)
         J = [i for i in Y if not i in I]
         K = [i for i in range(len(G)) if not (i in I or i in J)]
         self.INT, self.B, self.C = _G[J], _G[I], _G[K]
         self.MC = distance_grid(self.C, G_idx)
         self.MD = distance_grid(np.vstack((self.B, self.INT)), G_idx)
-        if plot:
-            self.clear_ax()
-            self.plot_X(self.ax[0])
-            self.plot_M(self.ax[1])
-            plot_contours(self.ax[1], C0, c='black')
-            self.plot_all(self.ax[2])
-            plot_contours(self.ax[2], C0, c='black')
-            plt.show(False)
-            for i, ax in enumerate(self.ax):
-                save_axis(self.fig, ax, 'tex2/figures/hsn_domain_%d.pdf' % i)
-            # res = wait(' : domain')
-            # if res:
-            #     for i, ax in enumerate(self.ax):
-            #         save_axis(self.fig, ax, 'tex2/figures/hsn_domain_%d_%s.pdf' % (i, res))
     ''''''''''''''''''''
     ''' assumption 1 '''
     def test_size(self, plot=False):
         C0 = find_contours_ext(self.MC.T, self.alpha + self.beta, PAD)
         C1 = find_contours_ext(self.MC.T, 2 * self.alpha, PAD)
         poly0, poly1 = map(poly_contour, (C0, C1))
-        if plot:
-            self.clear_ax()
-            self.plot_all(self.ax[0])
-            self.plot_MC(self.ax[1])
-            plot_poly(self.ax[1], poly0, c='red', alpha=0.3)
-            self.plot_MC(self.ax[2])
-            plot_poly(self.ax[2], poly1, c='blue', alpha=0.3)
-            plt.show(False)
-            for i, ax in enumerate(self.ax):
-                save_axis(self.fig, ax, 'tex2/figures/hsn_size_%d.pdf' % i)
-            # res = wait(' : test_size  (%d -> %d)' % (len(poly0), len(poly1)))
-            # if res:
-            #     for i, ax in enumerate(self.ax):
-            #         save_axis(self.fig, ax, 'tex2/figures/hsn_size_%d_%s.pdf' % (i, res))
+        self.poly['size'] = (poly0, poly1)
+        self.contour['size'] = (C0, C1)
         return (len(poly0) + len(poly1) and len(poly0) >= len(poly1)
             and all(any(p.within(q) for p in poly0) for q in poly1))
     ''''''''''''''''''''
@@ -94,20 +68,8 @@ class GaussianNetwork:
         C0 = find_contours_ext(self.MC.T, 2 * self.alpha, PAD)
         C1 = find_contours_ext(self.MD.T, 2 * self.alpha, PAD)
         poly0, poly1 = map(poly_contour, (C0, C1))
-        if plot:
-            self.clear_ax()
-            self.plot_all(self.ax[0])
-            self.plot_MC(self.ax[1])
-            plot_poly(self.ax[1], poly0, c='red', alpha=0.3)
-            self.plot_MD(self.ax[2])
-            plot_poly(self.ax[2], poly1, c='blue', alpha=0.15)
-            plt.show(False)
-            for i, ax in enumerate(self.ax):
-                save_axis(self.fig, ax, 'tex2/figures/hsn_close_%d.pdf' % i)
-            # res = wait(' : test_close (%d -> %d)' % (len(poly0), len(poly1)))
-            # if res:
-            #     for i, ax in enumerate(self.ax):
-            #         save_axis(self.fig, ax, 'tex2/figures/hsn_close_%d_%s.pdf' % (i, res))
+        self.poly['close'] = (poly0, poly1)
+        self.contour['close'] = (C0, C1)
         return len(poly0) <= len(poly1) and all(any(p.within(q) for q in poly1) for p in poly0)
     ''''''''''''''''''''''''''''''''''''
     ''' plot network and assumptions '''
@@ -119,6 +81,38 @@ class GaussianNetwork:
     def plot_M(self, axis): axis.imshow(self.M, origin='lower', extent=self.extent, interpolation='bilinear')
     def plot_MC(self, axis): axis.imshow(self.MC, origin='lower', extent=self.extent, interpolation='bilinear')
     def plot_MD(self, axis): axis.imshow(self.MD, origin='lower', extent=self.extent, interpolation='bilinear')
+    def domain_plot(self, shadow=True):
+        self.clear_ax()
+        self.plot_X(self.ax[0])
+        self.plot_M(self.ax[1])
+        plot_contours(self.ax[1], self.contour['B'], shadow, c='black')
+        self.plot_all(self.ax[2], shadow)
+        plot_contours(self.ax[2], self.contour['B'], shadow, c='black')
+        # plt.show(False)
+        # for i, ax in enumerate(self.ax):
+        #     save_axis(self.fig, ax, 'tex2/figures/hsn_domain_%d.pdf' % i)
+    def size_plot(self, shadow=True):
+        self.clear_ax()
+        self.plot_all(self.ax[0], shadow)
+        self.plot_MC(self.ax[1])
+        self.plot_MC(self.ax[2])
+        p0, p1 = self.poly['size']
+        plot_poly(self.ax[1], p0, shadow, c='red', alpha=0.3)
+        plot_poly(self.ax[2], p1, shadow, c='blue', alpha=0.3)
+        # plt.show(False)
+        # for i, ax in enumerate(self.ax):
+        #     save_axis(self.fig, ax, 'tex2/figures/hsn_size_%d.pdf' % i)
+    def close_plot(self, shadow=True):
+        self.clear_ax()
+        self.plot_all(self.ax[0], shadow)
+        self.plot_MC(self.ax[1])
+        self.plot_MD(self.ax[2])
+        p0, p1 = self.poly['close']
+        plot_poly(self.ax[1], p0, shadow, c='red', alpha=0.3)
+        plot_poly(self.ax[2], p1, shadow, c='blue', alpha=0.15)
+        # plt.show(False)
+        # for i, ax in enumerate(self.ax):
+        #     save_axis(self.fig, ax, 'tex2/figures/hsn_close_%d.pdf' % i)
     def plot_domain(self, axis, shadow=True, **kw):
         if 'color' in kw:
             kw['c'] = kw['color']
@@ -160,11 +154,11 @@ class HSN(RipsHomology, GaussianNetwork):
         print('[ %d point interior, %d point boundary' % (len(self.INT), len(self.B)))
         RipsHomology.__init__(self, data, dim + 1, beta, prime, Q)
         self.dim = self.dim - 1
-        if len(self.ax):
-            self.plot(self.ax)
-            plt.show(False)
-            for i, ax in enumerate(self.ax):
-                save_axis(self.fig, ax, 'tex2/figures/hsn_net_%d.pdf' % i)
+        # if len(self.ax):
+        #     self.plot(self.ax)
+        #     # plt.show(False)
+        #     # for i, ax in enumerate(self.ax):
+        #     #     save_axis(self.fig, ax, 'tex2/figures/hsn_net_%d.pdf' % i)
     def in_int(self, s):
         return all(not v in self.Q for v in s)
     def in_bdy(self, s):

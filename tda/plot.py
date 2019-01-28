@@ -95,18 +95,26 @@ def save_axis(fig, ax, fname):
 ''''''''''''''''''
 
 class Interact:
-    def __init__(self, fig, ax, classes, F, data, prime, *args, **kw):
-        self.fig, self.ax, self.classes = fig, ax, classes
-        self.F, self.data, self.prime = F, data, prime
-        self.args, self.kw = args, kw
+    # def __init__(self, classes, F, data, prime, *args, **kw):
+    def __init__(self, fig, ax, classes, **kw):
+        self.fig, self.ax = fig, ax
+        map(lambda x: x.axis('equal'), self.ax)
+        map(lambda x: x.axis('off'), self.ax)
+        self.classes, self.kw = classes, kw
+        # self.F, self.data, self.prime = F, data, prime
         self.cache = {}
-    def get_obj(self, fun, *args, **kw):
+    def get_obj(self, fun, **kw):
         if not fun in self.cache: # and self.cache[fun]
-            self.cache[fun] = self.classes[fun](self.fig, self.ax, *args, **kw)
+            self.cache[fun] = self.classes[fun](self.fig, self.ax, **kw)
         self.cache[fun].init_plot()
         return self.cache[fun]
-    def anevent(self, fun): # , *args, **kw):
-        self.OBJ = self.get_obj(fun, self.F, self.data, self.prime, *self.args, **self.kw)
+    # def anevent(self, fun):
+    def anevent(self, fun, **kw):
+        _kw = self.kw.copy()
+        for k, v in kw.iteritems():
+            _kw[k] = v
+        # self.OBJ = self.get_obj(fun, self.F, self.data, self.prime, *args, **kw)
+        self.OBJ = self.get_obj(fun, **_kw)
         def event(e):
             sys.stdout.write('\r')
             sys.stdout.flush()
@@ -116,8 +124,8 @@ class Interact:
             sys.stdout.write('> ')
             sys.stdout.flush()
         return event
-    def addevent(self, *args, **kwargs):
-        fun = self.anevent(*args, **kwargs)
+    def addevent(self, fun, **kw):
+        fun = self.anevent(fun, **kw)
         return self.fig.canvas.mpl_connect('button_release_event', fun)
 
 class PersistencePlot(DioPersist):
