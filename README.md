@@ -8,6 +8,14 @@ In order to install Dionysus you will need
     * GCC >= 5.4
     * Boost 1.55.
 
+On OSX GCC and CMake and Boost may all be installed with homebrew (https://brew.sh/)
+
+    brew install gcc cmake boost
+
+On Ubuntu
+
+    sudo apt install libboost-all-dev cmake
+
 To build the package and install all requirements run the following from the project's root directory
 
     pip install -r requirements.txt
